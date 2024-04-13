@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
-class SymetricEncryption(ABC):
+class SymmetricEncryption(ABC):
     @abstractmethod
     def encrypt(self, payload: str, key: bytes) -> str:
         pass
@@ -32,10 +32,12 @@ class SymetricEncryption(ABC):
         return kdf.derive(pw.encode('utf-8'))
 
 
-class AES256(SymetricEncryption):
+class AES256(SymmetricEncryption):
     def encrypt(self, payload: str, key: bytes) -> str:
         iv = os.urandom(16)
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        cipher = Cipher(
+            algorithms.AES(key), modes.CBC(iv), backend=default_backend()
+        )
         encryptor = cipher.encryptor()
         payload = payload.encode('utf-8')
         padding_length = 16 - len(payload) % 16
@@ -48,7 +50,9 @@ class AES256(SymetricEncryption):
         encrypted_iv = base64.urlsafe_b64decode(encrypted)
         iv = encrypted_iv[:16]
         encrypted_data = encrypted_iv[16:]
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        cipher = Cipher(
+            algorithms.AES(key), modes.CBC(iv), backend=default_backend()
+        )
         decryptor = cipher.decryptor()
         decrypted = decryptor.update(encrypted_data) + decryptor.finalize()
         padding_length = decrypted[-1]
@@ -56,14 +60,18 @@ class AES256(SymetricEncryption):
         return unpadded_decrypted.decode('utf-8')
 
 
-class ChaCha20(SymetricEncryption):
+class ChaCha20(SymmetricEncryption):
     def encrypt(self, payload: str, key: bytes) -> str:
         nonce = os.urandom(16)
         cipher = Cipher(
-            algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend()
+            algorithms.ChaCha20(key, nonce),
+            mode=None,
+            backend=default_backend()
         )
         encryptor = cipher.encryptor()
-        encrypted = encryptor.update(payload.encode('utf-8')) + encryptor.finalize()
+        encrypted = (
+            encryptor.update(payload.encode('utf-8')) + encryptor.finalize()
+        )
         encrypted_nonce = nonce + encrypted
         return base64.urlsafe_b64encode(encrypted_nonce).decode('utf-8')
 
@@ -72,7 +80,9 @@ class ChaCha20(SymetricEncryption):
         nonce = encrypted_nonce[:16]
         encrypted_data = encrypted_nonce[16:]
         cipher = Cipher(
-            algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend()
+            algorithms.ChaCha20(key, nonce),
+            mode=None,
+            backend=default_backend()
         )
         decryptor = cipher.decryptor()
         decrypted = decryptor.update(encrypted_data) + decryptor.finalize()
@@ -83,11 +93,11 @@ class ChaCha20(SymetricEncryption):
 class Key:
     def __init__(self, algorithm):
         self.alorithm: str = algorithm.__name__
-        self.core: SymetricEncryption = algorithm()
+        self.core: SymmetricEncryption = algorithm()
 
     def generate(self, pw: str, salt: str = ""):
         salt = self.alorithm if salt == "" else salt
-        return SymetricEncryption.generate_key(pw, salt)
+        return SymmetricEncryption.generate_key(pw, salt)
 
     def encrypt(self, payload: str, key: str):
         return self.core.encrypt(payload, key)
@@ -103,3 +113,12 @@ decrypted = encryption.decrypt(encrypted, key)
 
 print("Encrypted:", encrypted)
 print("Decrypted:", decrypted)
+
+encryption = Key(ChaCha20)
+key = encryption.generate("password")
+encrypted = encryption.encrypt("Secret Message", key)
+decrypted = encryption.decrypt(encrypted, key)
+
+print("Encrypted:", encrypted)
+print("Decrypted:", decrypted)
+
