@@ -43,7 +43,9 @@ class AES256(SymmetricEncryption):
         encryptor = cipher.encryptor()
         payload_bytes = payload.encode('utf-8')
         padding_length = 16 - len(payload_bytes) % size
-        padded_payload = payload_bytes + bytes([padding_length] * padding_length)
+        padded_payload = payload_bytes + bytes(
+            [padding_length] * padding_length
+        )
         encrypted = encryptor.update(padded_payload) + encryptor.finalize()
         encrypted_iv = iv + encrypted
         return base64.urlsafe_b64encode(encrypted_iv).decode('utf-8')
@@ -73,7 +75,8 @@ class ChaCha20(SymmetricEncryption):
             backend=default_backend()
         )
         encryptor = cipher.encryptor()
-        encrypted = encryptor.update(payload.encode('utf-8')) + encryptor.finalize()
+        encrypted = encryptor.update(
+            payload.encode('utf-8')) + encryptor.finalize()
         encrypted_nonce = nonce + encrypted
         return base64.urlsafe_b64encode(encrypted_nonce).decode('utf-8')
 
@@ -110,18 +113,20 @@ class Key:
 
 
 # Beispiel für die Verwendung der überarbeiteten Klassen
-encryption = Key(AES256)
-key = encryption.generate("password")
-encrypted = encryption.encrypt("Secret Message", key)
-decrypted = encryption.decrypt(encrypted, key)
 
-print("Encrypted:", encrypted)
-print("Decrypted:", decrypted)
+for index in range(10, 50):
+    encryption = Key(AES256)
+    key = encryption.generate(os.urandom(index).hex())
+    encrypted = encryption.encrypt("Secret Message " + os.urandom(index).hex(), key)
+    decrypted = encryption.decrypt(encrypted, key)
 
-encryption = Key(ChaCha20)
-key = encryption.generate("password")
-encrypted = encryption.encrypt("Secret Message", key)
-decrypted = encryption.decrypt(encrypted, key)
+    print("Encrypted:", encrypted)
+    print("Decrypted:", decrypted)
 
-print("Encrypted:", encrypted)
-print("Decrypted:", decrypted)
+    encryption = Key(ChaCha20)
+    key = encryption.generate(os.urandom(index).hex())
+    encrypted = encryption.encrypt("Secret Message " + os.urandom(index).hex(), key)
+    decrypted = encryption.decrypt(encrypted, key)
+
+    print("Encrypted:", encrypted)
+    print("Decrypted:", decrypted)
