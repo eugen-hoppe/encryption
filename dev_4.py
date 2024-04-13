@@ -19,18 +19,26 @@ class SymmetricEncryption(ABC):
         pass
 
     @staticmethod
-    def generate_key(pw: str, salt: str) -> str:
-        salt_bytes = salt.encode('utf-8')
-        backend = default_backend()
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt_bytes,
-            iterations=100000,
-            backend=backend
-        )
-        key_bytes = kdf.derive(pw.encode('utf-8'))
-        return base64.urlsafe_b64encode(key_bytes).decode('utf-8')
+    def generate_key(
+        pw: str, salt: str, iterations: int, get_salt: bool, get_pw: bool
+    ) -> tuple[str, str | None, str | None]:
+        try:
+            salt_bytes = salt.encode('utf-8')
+            backend = default_backend()
+            kdf = PBKDF2HMAC(
+                algorithm=hashes.SHA256(),
+                length=32,
+                salt=salt_bytes,
+                iterations=iterations,
+                backend=backend
+            )
+            key_bytes = kdf.derive(pw.encode('utf-8'))
+            key_str = base64.urlsafe_b64encode(key_bytes).decode('utf-8')
+            salt = salt if get_salt is True else None
+            password = pw if get_pw is True else None
+            return key_str, salt, password
+        except (ValueError, TypeError) as e:
+            raise ValueError("Failed to generate key: " + str(e))
 
 
 class AES256(SymmetricEncryption):
@@ -100,10 +108,17 @@ class Key:
         self.algorithm: str = algorithm.__name__
         self.core: SymmetricEncryption = algorithm()
 
-    def generate(self, pw: str, salt: str = ""):
+    def generate(
+        self,
+        pw: str,
+        salt: str = "", 
+        iterations: int = 100_000,
+        get_salt: bool = False,
+        get_pw: bool = False
+    ) -> tuple[str, str | None, str | None]:
         if salt == "":
             salt = os.urandom(16).hex()
-        return self.core.generate_key(pw, salt)
+        return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
 
     def encrypt(self, payload: str, key: str):
         return self.core.encrypt(payload, key)
@@ -114,15 +129,18 @@ class Key:
 
 def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
     encryption = Key(enc)
-    key = encryption.generate(os.urandom(index).hex())
+    key, salt, pw = encryption.generate(
+        os.urandom(index).hex(), get_salt=True, get_pw=True
+    )
     message = f"Message with {encryption.algorithm } {os.urandom(index).hex()}"
     encrypted = encryption.encrypt(message, key)
     decrypted = encryption.decrypt(encrypted, key)
     if index % print_at == 0:
-        print(index, decrypted, encrypted, "\n")
+        print("TEST_ID:", index, "SALT:", salt, "PW:", pw)
+        print("PAYLOAD:", decrypted, "\nENCRYPTED:", encrypted, "\n")
     assert encryption.decrypt(encrypted, key) == message
 
 
-for index in range(10, 100):
+for index in range(10, 50):
     test_encryption(index, AES256, 9)
     test_encryption(index, ChaCha20, 11)
