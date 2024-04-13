@@ -2,6 +2,7 @@ import base64
 import os
 
 from abc import ABC, abstractmethod
+from enum import Enum
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -11,6 +12,16 @@ from cryptography.exceptions import (
     InvalidKey, AlreadyFinalized, InvalidSignature, UnsupportedAlgorithm
 )
 
+
+class Raise(str, Enum):
+    LEVEL: str = "PRODUCTION"
+
+    def value_error(log: str, error: Exception):
+        err_txt = Raise.LEVEL.value + log
+        if Raise.LEVEL.value != "DEVELOPMENT":
+            raise ValueError(err_txt) from None
+        else:
+            raise ValueError(err_txt + ": " + str(error)) from error
 
 
 class SymmetricEncryption(ABC):
@@ -121,20 +132,20 @@ class Key:
                 salt = os.urandom(16).hex()
             return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
         except (ValueError, TypeError) as e:
-            raise ValueError("Failed to generate key: " + str(e))
+            Raise.value_error("Failed to generate key", e)
 
     def encrypt(self, payload: str, key: str):
         try:
             return self.core.encrypt(payload, key)
         except (InvalidKey, UnsupportedAlgorithm) as e:
-            raise ValueError("Encryption failed: " + str(e))
+            Raise.value_error("Encryption failed", e)
 
     def decrypt(self, encrypted: str, key: str):
         try:
             return self.core.decrypt(encrypted, key)
         except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
-            raise ValueError("Decryption failed: " + str(e))
-
+            Raise.value_error("Decryption failed", e)
+            
 def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
     encryption = Key(enc)
     key, salt, pw = encryption.generate(
