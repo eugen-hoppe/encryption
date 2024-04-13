@@ -8,20 +8,16 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.exceptions import (
-    InvalidKey, AlreadyFinalized, InvalidSignature, UnsupportedAlgorithm
-)
+from cryptography.exceptions import InvalidKey, AlreadyFinalized, UnsupportedAlgorithm
 
 
-class Raise(str, Enum):
-    LEVEL: str = "PRODUCTION"
+class Mode(str, Enum):
+    PRODUCTION: str = "production"
+    DEVELOPMENT: str = "development"
 
-    def value_error(log: str, error: Exception):
-        err_txt = Raise.LEVEL.value + log
-        if Raise.LEVEL.value != "DEVELOPMENT":
-            raise ValueError(err_txt) from None
-        else:
-            raise ValueError(err_txt + ": " + str(error)) from error
+
+class Config(Enum):
+    MODE: Mode = Mode.PRODUCTION
 
 
 class SymmetricEncryption(ABC):
@@ -51,6 +47,14 @@ class SymmetricEncryption(ABC):
         salt = salt if get_salt is True else None
         password = pw if get_pw is True else None
         return key_str, salt, password
+    
+    @staticmethod
+    def raise_value_error(log: str, error: Exception, level: Mode = Mode.PRODUCTION):
+        error_message = f"{level.value}: {log}"
+        if level.value == Mode.DEVELOPMENT:
+            raise ValueError(f"{error_message}: {str(error)}") from error
+        else:
+            raise ValueError(error_message) from None
 
 
 class AES256(SymmetricEncryption):
@@ -83,6 +87,7 @@ class AES256(SymmetricEncryption):
         padding_length = decrypted[-1]
         unpadded_decrypted = decrypted[:-padding_length]
         return unpadded_decrypted.decode('utf-8')
+
 
 class ChaCha20(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, size: int = 16) -> str:
@@ -132,20 +137,21 @@ class Key:
                 salt = os.urandom(16).hex()
             return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
         except (ValueError, TypeError) as e:
-            Raise.value_error("Failed to generate key", e)
+            self.core.raise_value_error("Failed to generate key", e, Config.MODE)
 
     def encrypt(self, payload: str, key: str):
         try:
             return self.core.encrypt(payload, key)
         except (InvalidKey, UnsupportedAlgorithm) as e:
-            Raise.value_error("Encryption failed", e)
+            self.core.raise_value_error("Encryption failed", e, Config.MODE)
 
     def decrypt(self, encrypted: str, key: str):
         try:
             return self.core.decrypt(encrypted, key)
         except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
-            Raise.value_error("Decryption failed", e)
-            
+            self.core.raise_value_error("Decryption failed", e, Config.MODE)
+
+
 def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
     encryption = Key(enc)
     key, salt, pw = encryption.generate(
