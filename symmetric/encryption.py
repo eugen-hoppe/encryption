@@ -43,7 +43,7 @@ class Key:
             if salt == "":
                 salt = os.urandom(16).hex()
             return self.core.generate_key(
-                pw, salt, iterations, get_salt, get_pw, key_length
+                pw, salt, get_salt, get_pw, iterations, key_length
             )
         except (ValueError, TypeError) as e:
             self.core.raise_value_error(ERR_GENENRATE_KEY, e, MODE)
