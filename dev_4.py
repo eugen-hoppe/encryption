@@ -133,6 +133,7 @@ class Key:
         get_pw: bool = False
     ) -> tuple[str, str | None, str | None]:
         try:
+            self.validate_strings(pw, salt)
             if salt == "":
                 salt = os.urandom(16).hex()
             return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
@@ -141,15 +142,25 @@ class Key:
 
     def encrypt(self, payload: str, key: str):
         try:
+            self.validate_strings(payload, key)
             return self.core.encrypt(payload, key)
         except (InvalidKey, UnsupportedAlgorithm) as e:
             self.core.raise_value_error("Encryption failed", e, Config.MODE)
 
     def decrypt(self, encrypted: str, key: str):
         try:
+            self.validate_strings(encrypted, key)
             return self.core.decrypt(encrypted, key)
         except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
             self.core.raise_value_error("Decryption failed", e, Config.MODE)
+    
+    @staticmethod
+    def validate_strings(*args):
+        for arg_id, string in enumerate(args):
+            if not isinstance(string, str):
+                raise TypeError(
+                    f"ERROR: arg_{arg_id + 1} is not a string. Type:" + str(type(string))
+                )
 
 
 def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
@@ -158,6 +169,8 @@ def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
         os.urandom(index).hex(), get_salt=True, get_pw=True
     )
     message = f"Message with {encryption.algorithm } {os.urandom(index).hex()}"
+    if index == print_at:
+        message, salt, pw = "", "", ""
     encrypted = encryption.encrypt(message, key)
     decrypted = encryption.decrypt(encrypted, key)
     if index % print_at == 0:
@@ -169,3 +182,4 @@ def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
 for index in range(10, 50):
     test_encryption(index, AES256, 9)
     test_encryption(index, ChaCha20, 11)
+
