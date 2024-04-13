@@ -112,21 +112,17 @@ class Key:
         return self.core.decrypt(encrypted, key)
 
 
-# Beispiel für die Verwendung der überarbeiteten Klassen
-
-for index in range(10, 50):
-    encryption = Key(AES256)
+def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
+    encryption = Key(enc)
     key = encryption.generate(os.urandom(index).hex())
-    encrypted = encryption.encrypt("Secret Message " + os.urandom(index).hex(), key)
+    message = f"Message with {encryption.algorithm } {os.urandom(index).hex()}"
+    encrypted = encryption.encrypt(message, key)
     decrypted = encryption.decrypt(encrypted, key)
+    if index % print_at == 0:
+        print(index, decrypted, encrypted, "\n")
+    assert encryption.decrypt(encrypted, key) == message
 
-    print("Encrypted:", encrypted)
-    print("Decrypted:", decrypted)
 
-    encryption = Key(ChaCha20)
-    key = encryption.generate(os.urandom(index).hex())
-    encrypted = encryption.encrypt("Secret Message " + os.urandom(index).hex(), key)
-    decrypted = encryption.decrypt(encrypted, key)
-
-    print("Encrypted:", encrypted)
-    print("Decrypted:", decrypted)
+for index in range(10, 100):
+    test_encryption(index, AES256, 9)
+    test_encryption(index, ChaCha20, 11)
