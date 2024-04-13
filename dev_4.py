@@ -26,6 +26,11 @@ DEFAULT_NONCE_OR_PADDING = 16
 DEFAULT_KEY_GENERATION_LENGTH = 32
 DEFAULT_KEY_GENERATION_ITERATIONS = 100_000
 
+ERR_GENENRATE_KEY = "Key generation failed"
+ERR_ENCRYPTION = "Encryption failed"
+ERR_DECRYPTION = "Decryption failed"
+ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
+
 
 class SymmetricEncryption(ABC):
     @abstractmethod
@@ -161,7 +166,7 @@ class Key:
                 pw, salt, iterations, get_salt, get_pw, key_length
             )
         except (ValueError, TypeError) as e:
-            self.core.raise_value_error("Failed to generate key", e, MODE)
+            self.core.raise_value_error(ERR_GENENRATE_KEY, e, MODE)
 
     def encrypt(
             self,
@@ -172,8 +177,8 @@ class Key:
         try:
             self.validate_strings(payload, key)
             return self.core.encrypt(payload, key, size)
-        except (InvalidKey, UnsupportedAlgorithm) as e:
-            self.core.raise_value_error("Encryption failed", e, MODE)
+        except (InvalidKey, UnsupportedAlgorithm) as err:
+            self.core.raise_value_error(ERR_ENCRYPTION, err, MODE)
 
     def decrypt(
             self,
@@ -184,15 +189,18 @@ class Key:
         try:
             self.validate_strings(encrypted, key)
             return self.core.decrypt(encrypted, key, size)
-        except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
-            self.core.raise_value_error("Decryption failed", e, MODE)
+        except (InvalidKey,
+                AlreadyFinalized,
+                UnsupportedAlgorithm,
+                ValueError) as err:
+            self.core.raise_value_error(ERR_DECRYPTION, err, MODE)
     
     @staticmethod
     def validate_strings(*args) -> None:
         for arg_id, string in enumerate(args):
             if not isinstance(string, str):
                 raise TypeError(
-                    f"ERROR: arg_{arg_id + 1} is not a string. Type:{type(string)}"
+                    ERR_INVALID_STR.format(arg_id + 1, str(type(string)))
                 )
 
 
@@ -216,7 +224,6 @@ def test_encryption(
     assert encryption.decrypt(encrypted, key) == message
 
 
-for index in range(10, 50):
+for index in range(10, 100):
     test_encryption(index, AES256, 9)
     test_encryption(index, ChaCha20, 11)
-
