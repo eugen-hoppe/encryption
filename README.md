@@ -1,40 +1,39 @@
-# encryption
-Encryption Utils v1.0
+# encryption v1.0
 
+## Description
 
-## Symmetric Encryption Module Usage
-
-Below are detailed example on how to generate a cryptographic key,
-and how to encrypt and decrypt messages.
+This project offers a flexible implementation for symmetric encryption, enabling the use of various algorithms such as AES256 and ChaCha20 for encryption operations. The framework is designed to be easily extendable to support additional algorithms.
 
 ### Dependencies
 
-Ensure you have the necessary custom modules and dependencies installed,
-including the cryptography package and any specific modules
-(`symmetric`, `encryption`, `aes`) your project uses.
+Ensure that the necessary packages are installed:
 
-### Initialization
+- `cryptography`
+- Custom `symmetric` module that includes `encryption` and `aes` (or other algorithms).
 
-Start by creating an instance of the `Key` class with `AES256` as the
-encryption algorithm:
+### Setup
+
+Import the required modules and initialize the encryption key with the desired algorithm:
 
 ```python
-from symmetric import encryption, aes
+from symmetric.encryption import Key
+from symmetric.aes import AES256
+# Optional: from symmetric.chacha import ChaCha20
 
-encryption_ = encryption.Key(aes.AES256)
+encryption_ = Key(AES256)
+# Optional: encryption_ = Key(ChaCha20) to use ChaCha20
 ```
 
 ### Key Generation
 
-Generate a cryptographic key using a password and a salt. 
-You can optionally retrieve the salt and password used:
+Generate a key based on a password and optionally a salt:
 
 ```python
-PASSWORT = "Pa$sW0rT"
+PASSWORD = "Pa$sW0rT"
 SALT = "i38McOSAm94gSR18FMrQh8"
 
 key, salt, pw = encryption_.generate(
-    PASSWORT,
+    PASSWORD,
     SALT,
     get_salt=True,
     get_pw=True
@@ -42,23 +41,23 @@ key, salt, pw = encryption_.generate(
 print("\nKEY:", key, "\nSALT:", salt, "\nPW:", pw, "\n")
 ```
 
-### Encrypt and Decrypt Messages
+### Encryption and Decryption
 
-#### Using Password and Salt
+#### With Password and Salt
 
-Encrypt and decrypt a message using the generated key:
+Encrypt and decrypt a message using the previously generated key:
 
 ```python
-message_1 = "Encrypt secret message with paswort and salt ..."
+message_1 = "Encrypt secret message with password and salt ..."
 encrypted_with_pw = encryption_.encrypt(message_1, key)
 decrypted_with_pw = encryption_.decrypt(encrypted_with_pw, key)
 
 print(encrypted_with_pw, "\n", "|", "\n", " -> ", decrypted_with_pw, "\n")
 ```
 
-#### Using a Persistent Key
+#### With a Persistent Key
 
-Directly use a pre-existing key to encrypt and decrypt a message:
+Directly use a persistent key for encryption and decryption:
 
 ```python
 message_2 = "... or use key directly as string"
@@ -66,10 +65,14 @@ persistent_key = "m8569Q2yfE1L9NTD1PwYP3m4TkPR31q5ZtSL0cUkV5A="
 
 encrypted_with_key = encryption_.encrypt(message_2, persistent_key)
 decrypted_with_key = encryption_.decrypt(encrypted_with_key, persistent_key)
+
 print(encrypted_with_key, "\n", "|", "\n", " -> ", decrypted_with_key, "\n")
 ```
 
-### Handling Exceptions
+### Exception and Error Handling
 
-Ensure to handle potential exceptions such as `ValueError` and `TypeError` that
-may occur during key generation, encryption, or decryption processes.
+Ensure that potential exceptions such as `ValueError` and `TypeError` are properly handled. These may occur during key generation or the encryption/decryption processes.
+
+### Extensibility for Other Algorithms
+
+The modular design of the project allows for easy injection of other encryption algorithms like ChaCha20 by simply changing the imports and the initialization of the `Key` class. This enables flexible adaptation to various security requirements and scenarios.

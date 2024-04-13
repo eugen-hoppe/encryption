@@ -1,4 +1,5 @@
-from symmetric import encryption, aes
+from symmetric.encryption import Key
+from symmetric.aes import AES256
 
 
 PASSWORT = "Pa$sW0rT"
@@ -8,7 +9,7 @@ PAYLOAD = "Secret Message"
 BR = "\n"
 
 
-encryption_ = encryption.Key(aes.AES256)
+encryption_ = Key(AES256)
 
 
 # Generate Key
