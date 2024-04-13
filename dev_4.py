@@ -7,6 +7,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.exceptions import (
+    InvalidKey, AlreadyFinalized, InvalidSignature, UnsupportedAlgorithm
+)
+
 
 
 class SymmetricEncryption(ABC):
@@ -22,23 +26,20 @@ class SymmetricEncryption(ABC):
     def generate_key(
         pw: str, salt: str, iterations: int, get_salt: bool, get_pw: bool
     ) -> tuple[str, str | None, str | None]:
-        try:
-            salt_bytes = salt.encode('utf-8')
-            backend = default_backend()
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=salt_bytes,
-                iterations=iterations,
-                backend=backend
-            )
-            key_bytes = kdf.derive(pw.encode('utf-8'))
-            key_str = base64.urlsafe_b64encode(key_bytes).decode('utf-8')
-            salt = salt if get_salt is True else None
-            password = pw if get_pw is True else None
-            return key_str, salt, password
-        except (ValueError, TypeError) as e:
-            raise ValueError("Failed to generate key: " + str(e))
+        salt_bytes = salt.encode('utf-8')
+        backend = default_backend()
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt_bytes,
+            iterations=iterations,
+            backend=backend
+        )
+        key_bytes = kdf.derive(pw.encode('utf-8'))
+        key_str = base64.urlsafe_b64encode(key_bytes).decode('utf-8')
+        salt = salt if get_salt is True else None
+        password = pw if get_pw is True else None
+        return key_str, salt, password
 
 
 class AES256(SymmetricEncryption):
@@ -71,7 +72,6 @@ class AES256(SymmetricEncryption):
         padding_length = decrypted[-1]
         unpadded_decrypted = decrypted[:-padding_length]
         return unpadded_decrypted.decode('utf-8')
-
 
 class ChaCha20(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, size: int = 16) -> str:
@@ -116,16 +116,24 @@ class Key:
         get_salt: bool = False,
         get_pw: bool = False
     ) -> tuple[str, str | None, str | None]:
-        if salt == "":
-            salt = os.urandom(16).hex()
-        return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
+        try:
+            if salt == "":
+                salt = os.urandom(16).hex()
+            return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
+        except (ValueError, TypeError) as e:
+            raise ValueError("Failed to generate key: " + str(e))
 
     def encrypt(self, payload: str, key: str):
-        return self.core.encrypt(payload, key)
+        try:
+            return self.core.encrypt(payload, key)
+        except (InvalidKey, UnsupportedAlgorithm) as e:
+            raise ValueError("Encryption failed: " + str(e))
 
     def decrypt(self, encrypted: str, key: str):
-        return self.core.decrypt(encrypted, key)
-
+        try:
+            return self.core.decrypt(encrypted, key)
+        except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
+            raise ValueError("Decryption failed: " + str(e))
 
 def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
     encryption = Key(enc)
