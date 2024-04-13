@@ -3,6 +3,7 @@ import os
 
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import Type
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -16,22 +17,25 @@ class Mode(str, Enum):
     DEVELOPMENT: str = "development"
 
 
-class Config(Enum):
-    MODE: Mode = Mode.PRODUCTION
-
+MODE = Mode.PRODUCTION
+DEFAULT_NONCE_OR_PADDING = 16
 
 class SymmetricEncryption(ABC):
     @abstractmethod
-    def encrypt(self, payload: str, key: str) -> str:
+    def encrypt(self, payload: str, key: str, size: int) -> str:
         pass
 
     @abstractmethod
-    def decrypt(self, encrypted: str, key: str) -> str:
+    def decrypt(self, encrypted: str, key: str, size: int) -> str:
         pass
 
     @staticmethod
     def generate_key(
-        pw: str, salt: str, iterations: int, get_salt: bool, get_pw: bool
+        pw: str,
+        salt: str,
+        iterations: int,
+        get_salt: bool,
+        get_pw: bool
     ) -> tuple[str, str | None, str | None]:
         salt_bytes = salt.encode('utf-8')
         backend = default_backend()
@@ -49,7 +53,11 @@ class SymmetricEncryption(ABC):
         return key_str, salt, password
     
     @staticmethod
-    def raise_value_error(log: str, error: Exception, level: Mode = Mode.PRODUCTION):
+    def raise_value_error(
+        log: str,
+        error: Exception,
+        level: Mode = Mode.PRODUCTION
+    ) -> None:
         error_message = f"{level.value}: {log}"
         if level.value == Mode.DEVELOPMENT:
             raise ValueError(f"{error_message}: {str(error)}") from error
@@ -58,7 +66,7 @@ class SymmetricEncryption(ABC):
 
 
 class AES256(SymmetricEncryption):
-    def encrypt(self, payload: str, key: str, size: int = 16) -> str:
+    def encrypt(self, payload: str, key: str, size: int) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         iv = os.urandom(size)
         cipher = Cipher(
@@ -66,7 +74,7 @@ class AES256(SymmetricEncryption):
         )
         encryptor = cipher.encryptor()
         payload_bytes = payload.encode('utf-8')
-        padding_length = 16 - len(payload_bytes) % size
+        padding_length = size - len(payload_bytes) % size
         padded_payload = payload_bytes + bytes(
             [padding_length] * padding_length
         )
@@ -74,7 +82,7 @@ class AES256(SymmetricEncryption):
         encrypted_iv = iv + encrypted
         return base64.urlsafe_b64encode(encrypted_iv).decode('utf-8')
 
-    def decrypt(self, encrypted: str, key: str, size: int = 16) -> str:
+    def decrypt(self, encrypted: str, key: str, size: int) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_iv = base64.urlsafe_b64decode(encrypted)
         iv = encrypted_iv[:size]
@@ -90,7 +98,7 @@ class AES256(SymmetricEncryption):
 
 
 class ChaCha20(SymmetricEncryption):
-    def encrypt(self, payload: str, key: str, size: int = 16) -> str:
+    def encrypt(self, payload: str, key: str, size: int) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         nonce = os.urandom(size)
         cipher = Cipher(
@@ -104,7 +112,7 @@ class ChaCha20(SymmetricEncryption):
         encrypted_nonce = nonce + encrypted
         return base64.urlsafe_b64encode(encrypted_nonce).decode('utf-8')
 
-    def decrypt(self, encrypted: str, key: str, size: int = 16) -> str:
+    def decrypt(self, encrypted: str, key: str, size: int) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_nonce = base64.urlsafe_b64decode(encrypted)
         nonce = encrypted_nonce[:size]
@@ -120,7 +128,7 @@ class ChaCha20(SymmetricEncryption):
 
 
 class Key:
-    def __init__(self, algorithm):
+    def __init__(self, algorithm: Type[SymmetricEncryption]):
         self.algorithm: str = algorithm.__name__
         self.core: SymmetricEncryption = algorithm()
 
@@ -138,32 +146,46 @@ class Key:
                 salt = os.urandom(16).hex()
             return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
         except (ValueError, TypeError) as e:
-            self.core.raise_value_error("Failed to generate key", e, Config.MODE)
+            self.core.raise_value_error("Failed to generate key", e, MODE)
 
-    def encrypt(self, payload: str, key: str):
+    def encrypt(
+            self,
+            payload: str,
+            key: str,
+            size: int = DEFAULT_NONCE_OR_PADDING
+        ) -> str:
         try:
             self.validate_strings(payload, key)
-            return self.core.encrypt(payload, key)
+            return self.core.encrypt(payload, key, size)
         except (InvalidKey, UnsupportedAlgorithm) as e:
-            self.core.raise_value_error("Encryption failed", e, Config.MODE)
+            self.core.raise_value_error("Encryption failed", e, MODE)
 
-    def decrypt(self, encrypted: str, key: str):
+    def decrypt(
+            self,
+            encrypted: str,
+            key: str,
+            size: int = DEFAULT_NONCE_OR_PADDING
+        ) -> str:
         try:
             self.validate_strings(encrypted, key)
-            return self.core.decrypt(encrypted, key)
+            return self.core.decrypt(encrypted, key, size)
         except (InvalidKey, AlreadyFinalized, UnsupportedAlgorithm, ValueError) as e:
-            self.core.raise_value_error("Decryption failed", e, Config.MODE)
+            self.core.raise_value_error("Decryption failed", e, MODE)
     
     @staticmethod
-    def validate_strings(*args):
+    def validate_strings(*args) -> None:
         for arg_id, string in enumerate(args):
             if not isinstance(string, str):
                 raise TypeError(
-                    f"ERROR: arg_{arg_id + 1} is not a string. Type:" + str(type(string))
+                    f"ERROR: arg_{arg_id + 1} is not a string. Type:{type(string)}"
                 )
 
 
-def test_encryption(index: int, enc: SymmetricEncryption, print_at: int = 5):
+def test_encryption(
+        index: int,
+        enc: SymmetricEncryption,
+        print_at: int = 5
+    ) -> None:
     encryption = Key(enc)
     key, salt, pw = encryption.generate(
         os.urandom(index).hex(), get_salt=True, get_pw=True
