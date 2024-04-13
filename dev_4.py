@@ -9,7 +9,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.exceptions import InvalidKey, AlreadyFinalized, UnsupportedAlgorithm
+from cryptography.exceptions import (
+    InvalidKey,
+    AlreadyFinalized,
+    UnsupportedAlgorithm
+)
 
 
 class Mode(str, Enum):
@@ -19,6 +23,9 @@ class Mode(str, Enum):
 
 MODE = Mode.PRODUCTION
 DEFAULT_NONCE_OR_PADDING = 16
+DEFAULT_KEY_GENERATION_LENGTH = 32
+DEFAULT_KEY_GENERATION_ITERATIONS = 100_000
+
 
 class SymmetricEncryption(ABC):
     @abstractmethod
@@ -33,15 +40,16 @@ class SymmetricEncryption(ABC):
     def generate_key(
         pw: str,
         salt: str,
-        iterations: int,
         get_salt: bool,
-        get_pw: bool
+        get_pw: bool,
+        iterations: int,
+        key_lenght: int
     ) -> tuple[str, str | None, str | None]:
         salt_bytes = salt.encode('utf-8')
         backend = default_backend()
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
-            length=32,
+            length=key_lenght,
             salt=salt_bytes,
             iterations=iterations,
             backend=backend
@@ -70,7 +78,9 @@ class AES256(SymmetricEncryption):
         key_bytes = base64.urlsafe_b64decode(key)
         iv = os.urandom(size)
         cipher = Cipher(
-            algorithms.AES(key_bytes), modes.CBC(iv), backend=default_backend()
+            algorithms.AES(key_bytes),
+            modes.CBC(iv),
+            backend=default_backend()
         )
         encryptor = cipher.encryptor()
         payload_bytes = payload.encode('utf-8')
@@ -88,7 +98,9 @@ class AES256(SymmetricEncryption):
         iv = encrypted_iv[:size]
         encrypted_data = encrypted_iv[size:]
         cipher = Cipher(
-            algorithms.AES(key_bytes), modes.CBC(iv), backend=default_backend()
+            algorithms.AES(key_bytes),
+            modes.CBC(iv),
+            backend=default_backend()
         )
         decryptor = cipher.decryptor()
         decrypted = decryptor.update(encrypted_data) + decryptor.finalize()
@@ -136,15 +148,18 @@ class Key:
         self,
         pw: str,
         salt: str = "", 
-        iterations: int = 100_000,
         get_salt: bool = False,
-        get_pw: bool = False
+        get_pw: bool = False,
+        iterations: int = DEFAULT_KEY_GENERATION_ITERATIONS,
+        key_length: bool = DEFAULT_KEY_GENERATION_LENGTH
     ) -> tuple[str, str | None, str | None]:
         try:
             self.validate_strings(pw, salt)
             if salt == "":
                 salt = os.urandom(16).hex()
-            return self.core.generate_key(pw, salt, iterations, get_salt, get_pw)
+            return self.core.generate_key(
+                pw, salt, iterations, get_salt, get_pw, key_length
+            )
         except (ValueError, TypeError) as e:
             self.core.raise_value_error("Failed to generate key", e, MODE)
 
