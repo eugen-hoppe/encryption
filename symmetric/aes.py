@@ -10,6 +10,8 @@ from symmetric.interface import SymmetricEncryption
 class AES256(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, size: int) -> str:
         """Encrypts a given payload using AES-256 encryption in CBC mode.
+
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17a
         """
         key_bytes = base64.urlsafe_b64decode(key)
         iv = os.urandom(size)
@@ -31,19 +33,7 @@ class AES256(SymmetricEncryption):
     def decrypt(self, encrypted: str, key: str, size: int) -> str:
         """Decrypts encrypted message using AES-256 encryption in CBC mode.
 
-        Parameters:
-            encrypted (str):
-                The base64-url encoded string of the encrypted data,
-                which includes the initialization vector (IV) followed
-                by the ciphertext.
-            key (str):
-                The base64-url encoded string representing the secret key.
-                It must be a 256-bit key encoded in base64.
-            size (int):
-                The block size in bytes used during encryption.
-                Typically, this should be 16 bytes for AES.
-        Returns:
-            str: The decrypted plaintext string.
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17b
         """
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_iv = base64.urlsafe_b64decode(encrypted)
