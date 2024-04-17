@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Optional
 from asymmetric.interface import AsymmetricEncryption
 
 
@@ -10,16 +10,19 @@ class Keys:
         self.algorithm: str = algorithm.__name__
         self.core: AsymmetricEncryption = algorithm()
 
-    def generate(self, pw: str, get_pw: bool = False) -> tuple[str, str, str | None]:
-        self.validate_strings(pw)
+    def generate(self, pw: Optional[str] = None, get_pw: bool = False) -> tuple[str, str, Optional[str]]:
+        if pw is not None:
+            self.validate_strings(pw)
         return self.core.generate_keys(pw, get_pw)
 
     def encrypt(self, payload: str, key: str) -> str:
         self.validate_strings(payload, key)
         return self.core.encrypt(key, payload)
 
-    def decrypt(self, encrypted: str, key: str, pw: str) -> str:
-        self.validate_strings(encrypted, key, pw)
+    def decrypt(self, encrypted: str, key: str, pw: Optional[str] = None) -> str:
+        self.validate_strings(encrypted, key)
+        if pw:
+            self.validate_strings(pw)
         return self.core.decrypt(key, encrypted, pw)
 
     @staticmethod

@@ -3,6 +3,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
     PrivateFormat,
+    NoEncryption,
     BestAvailableEncryption,
     PublicFormat,
     load_pem_public_key,
@@ -13,17 +14,22 @@ from asymmetric.interface import AsymmetricEncryption
 
 
 class RSA(AsymmetricEncryption):
-    def generate_keys(self, pw: str, get_pw: bool = False):
+    def generate_keys(self, pw: str = None, get_pw: bool = False):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=2048,
         )
         public_key = private_key.public_key()
 
+        if pw:
+            encryption_algorithm = BestAvailableEncryption(pw.encode())
+        else:
+            encryption_algorithm = NoEncryption()
+
         private_key_pem = private_key.private_bytes(
             encoding=Encoding.PEM,
             format=PrivateFormat.PKCS8,
-            encryption_algorithm=BestAvailableEncryption(pw.encode())
+            encryption_algorithm=encryption_algorithm
         ).decode()
 
         public_key_pem = public_key.public_bytes(
@@ -31,7 +37,7 @@ class RSA(AsymmetricEncryption):
             format=PublicFormat.SubjectPublicKeyInfo
         ).decode()
 
-        if get_pw:
+        if get_pw and pw:
             return private_key_pem, public_key_pem, pw
         return private_key_pem, public_key_pem, None
 
@@ -47,11 +53,11 @@ class RSA(AsymmetricEncryption):
         )
         return base64.b64encode(ciphertext).decode('utf-8')
 
-    def decrypt(self, private_key_pem: str, ciphertext: str, pw: str):
+    def decrypt(self, private_key_pem: str, ciphertext: str, pw: str = None):
         private_key = load_pem_private_key(
             private_key_pem.encode(),
-            password=pw.encode(),
-            backend=None  # You might need to specify the backend or it can be default
+            password=(pw.encode() if pw else None),
+            backend=None
         )
         plaintext = private_key.decrypt(
             base64.b64decode(ciphertext),
