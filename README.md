@@ -1,6 +1,6 @@
 # encryption v1.0
 
-## Description
+## Symmetric Encryption (AES, ChaCha20)
 
 This project offers a flexible implementation for symmetric encryption, enabling the use of various algorithms such as AES256 and ChaCha20 for encryption operations. The framework is designed to be easily extendable to support additional algorithms.
 
@@ -76,3 +76,62 @@ Ensure that potential exceptions such as `ValueError` and `TypeError` are proper
 ### Extensibility for Other Algorithms
 
 The modular design of the project allows for easy injection of other encryption algorithms like ChaCha20 by simply changing the imports and the initialization of the `Key` class. This enables flexible adaptation to various security requirements and scenarios.
+
+---
+
+## Assymetric Encryption (RSA)
+
+This project provides a Python module for asymmetric encryption, including RSA encryption, that can be used to securely encrypt, decrypt, sign, and verify messages using public and private keys.
+
+## Features
+- **Key Pair Generation:** Generate public and private keys with optional password protection.
+- **Encryption and Decryption:** Encrypt messages with a public key and decrypt them with the corresponding private key.
+- **Signing and Verification:** Sign messages with a private key and verify signatures with the corresponding public key.
+- **Error Handling:** Robust error handling using decorators to manage and log exceptions effectively.
+
+## Project Structure
+The project is organized into two main directories:
+- `asymmetric/`: Contains the core logic for asymmetric encryption including an abstract base class and specific algorithm implementations.
+- `utils/`: Contains utility functions and classes for error handling and exception management.
+
+### Module Files
+- `asymmetric/encryption.py`: Implements the main functionality for key management and cryptographic operations.
+- `asymmetric/interface.py`: Defines an abstract base class for implementing various asymmetric encryption algorithms.
+- `asymmetric/rsa.py`: Provides a concrete implementation of RSA encryption.
+- `utils/error_handling.py`: Decorators and configurations for error handling.
+- `utils/exceptions.py`: Custom exceptions and error messages used across the module.
+
+## Usage
+
+### Generating Keys
+```python
+from asymmetric.encryption import Keys
+from asymmetric.rsa import RSA
+
+key_manager = Keys(RSA)
+private_key, public_key = key_manager.generate()
+```
+
+### Encrypting a Message
+```python
+encrypted_message = key_manager.encrypt(public_key, 'Hello, world!')
+```
+
+### Decrypting a Message
+```python
+decrypted_message = key_manager.decrypt(private_key, encrypted_message)
+```
+
+### Signing a Message
+```python
+signature = key_manager.sign(private_key, 'Message to sign')
+```
+
+### Verifying a Signature
+```python
+is_valid = key_manager.validate(public_key, 'Message to sign', signature)
+print(is_valid)  # True or False
+```
+
+## Contributing
+Contributions are welcome! Please feel free to submit pull requests, report bugs, and suggest features.
