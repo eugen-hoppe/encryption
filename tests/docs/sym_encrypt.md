@@ -6,6 +6,8 @@
 
 #### symmetric.aes.AES256.encrypt
 
+###### 40417a
+
 ```python
 """Encrypts a given payload using AES-256 encryption in CBC mode.
 
@@ -25,6 +27,8 @@ Returns (str):
 ```
 
 #### symmetric.aes.AES256.decrypt
+
+###### 40417b
 
 ```python
 """Decrypts encrypted message using AES-256 encryption in CBC mode.
