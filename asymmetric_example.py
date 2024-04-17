@@ -21,6 +21,12 @@ def main(password: str | None = None):
     print("Encrypted:", encrypted)
     print("Decrypted:", decrypted)
 
+    signature = rsa_keys.sign(private_key_pem, original_message, pw)
+    is_valid = rsa_keys.validate(public_key_pem, original_message, signature)
+    
+    print("Signature:", signature)
+    print("Signature valid:", is_valid)
+
 
 if __name__ == "__main__":
     PASSWORD = "123Passw"

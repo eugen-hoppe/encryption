@@ -1,6 +1,7 @@
 # Todo Asymmetric Encryption
 
-- sign
-- validate
-- docstrings
-- exception handling
+- [x] sign
+- [x] validate
+- [ ] docstrings
+- [ ] exception handling
+- [ ] path for algotithms

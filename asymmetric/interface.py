@@ -22,3 +22,12 @@ class AsymmetricEncryption(ABC):
         """
         pass
 
+    @abstractmethod
+    def sign(self, private_key, message):
+        """Signs a message using the private key."""
+        pass
+
+    @abstractmethod
+    def validate(self, public_key, message, signature):
+        """Validates a signature using the public key."""
+        pass

@@ -1,4 +1,6 @@
 import base64
+
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
@@ -10,6 +12,7 @@ from cryptography.hazmat.primitives.serialization import (
     load_pem_private_key
 )
 from cryptography.hazmat.primitives import hashes
+
 from asymmetric.interface import AsymmetricEncryption
 
 
@@ -68,3 +71,39 @@ class RSA(AsymmetricEncryption):
             )
         )
         return plaintext.decode()
+
+    def sign(
+        self, private_key_pem: str, message: str, password: str | None = None
+    ) -> str:
+        private_key = load_pem_private_key(
+            private_key_pem.encode(),
+            password=(password.encode() if password else None),
+            backend=None
+        )
+        signature = private_key.sign(
+            message.encode(),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        return base64.b64encode(signature).decode('utf-8')
+
+    def validate(
+        self, public_key_pem: str, message: str, signature: str
+    ) -> bool:
+        public_key = load_pem_public_key(public_key_pem.encode())
+        try:
+            public_key.verify(
+                base64.b64decode(signature),
+                message.encode(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            return True
+        except InvalidSignature:
+            return False
