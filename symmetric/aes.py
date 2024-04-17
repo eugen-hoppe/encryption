@@ -10,18 +10,6 @@ from symmetric.interface import SymmetricEncryption
 class AES256(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, size: int) -> str:
         """Encrypts a given payload using AES-256 encryption in CBC mode.
-
-        Parameters:
-            payload (str):
-                The plaintext string to encrypt.
-            key (str):
-                The base64-url encoded string representing the secret key.
-                It must be a 256-bit key encoded in base64.
-            size (int):
-                The block size in bytes. Typically, this should be 16 bytes.
-        Returns (str):
-            The base64-url encoded string of the encrypted data, which includes
-            the initialization vector (IV) prepended to the ciphertext.
         """
         key_bytes = base64.urlsafe_b64decode(key)
         iv = os.urandom(size)
