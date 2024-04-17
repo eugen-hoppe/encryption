@@ -1,3 +1,7 @@
+# Added
+dot_v2.py
+.overview/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
