@@ -1,4 +1,5 @@
-from tests import example_1, example_2
+from tests.symmetric import example_2
+from tests.symmetric import example_1
 
 
 TEST_IDS = [2]
