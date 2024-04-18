@@ -41,7 +41,7 @@ class SymmetricEncryption(ABC):
         pass
 
     @staticmethod
-    def generate_key(
+    def generate(
         pw: str,
         salt: str,
         get_salt: bool,
@@ -78,7 +78,7 @@ class SymmetricEncryption(ABC):
         return key_str, salt, password
     
     @staticmethod
-    def raise_value_error(
+    def raise_value_error(  # REFACTOR THIS
         log: str,
         error: Exception,
         level: Mode = Mode.PRODUCTION

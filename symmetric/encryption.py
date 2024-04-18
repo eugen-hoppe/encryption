@@ -9,6 +9,7 @@ from cryptography.exceptions import (
 )
 
 from symmetric.interface import SymmetricEncryption, Mode
+from utils.exceptions import ErrTxt
 
 
 MODE = Mode.PRODUCTION
@@ -23,7 +24,7 @@ ERR_DECRYPTION = "Decryption failed"
 ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
 
 
-class Key:
+class Key(SymmetricEncryption):
     def __init__(self, algorithm: Type[SymmetricEncryption]):
         """Initializes the Key object with a specific encryption class
 
@@ -49,33 +50,11 @@ class Key:
         iterations: int = DEFAULT_KEY_GENERATION_ITERATIONS,
         key_length: bool = DEFAULT_KEY_GENERATION_LENGTH
     ) -> tuple[str, str | None, str | None]:
-        """Generates a cryptographic key using the specified password and salt
-
-        Parameters:
-            pw (str):
-                The password from which to derive the key.
-            salt (str):
-                The salt to use in the key derivation process.
-                If empty, a random salt is generated.
-            get_salt (bool):
-                If True, returns the salt used in the key derivation.
-            get_pw (bool):
-                If True, returns the original password used.
-            iterations (int):
-                The number of iterations to use in the PBKDF2 algorithm.
-            key_length (int):
-                The desired length of the derived key in bytes.
-        Returns (tuple[str, str | None, str | None]):
-            A tuple containing the base64-encoded key,
-            optionally the salt, and optionally the password.
-        Raises:
-            ValueError: If the key generation process fails.
-        """
         try:
-            self.validate_strings(pw, salt)
+            ErrTxt.validate_strings(pw, salt)
             if salt == "":
                 salt = os.urandom(16).hex()
-            return self.core.generate_key(
+            return self.core.generate(
                 pw, salt, get_salt, get_pw, iterations, key_length
             )
         except (ValueError, TypeError) as e:
@@ -87,20 +66,8 @@ class Key:
             key: str,
             size: int = DEFAULT_NONCE_OR_PADDING
         ) -> str:
-        """Encrypts the given payload using the specified cryptographic key
-
-        Parameters:
-            payload (str): The plaintext data to encrypt.
-            key (str): The cryptographic key used for encryption.
-            size (int): The nonce or padding size in bytes.
-        Returns:
-            str: The encrypted data as a string.
-        Raises:
-            ValueError: If the encryption process fails due to an invalid key,
-            unsupported algorithm, etc.
-        """
         try:
-            self.validate_strings(payload, key)
+            ErrTxt.validate_strings(payload, key)
             return self.core.encrypt(payload, key, size)
         except (InvalidKey, UnsupportedAlgorithm) as err:
             self.core.raise_value_error(ERR_ENCRYPTION, err, MODE)
@@ -111,39 +78,11 @@ class Key:
             key: str,
             size: int = DEFAULT_NONCE_OR_PADDING
         ) -> str:
-        """Decrypts encrypted data using the specified cryptographic key
-
-        Parameters:
-            encrypted (str): The encrypted data to decrypt.
-            key (str): The cryptographic key used for decryption.
-            size (int): The nonce or padding size in bytes used.
-        Returns:
-            str: The decrypted data as a string.
-        Raises (ValueError):
-            If the decryption process fails due to an invalid key,
-            algorithm unsupported, etc.
-        """
         try:
-            self.validate_strings(encrypted, key)
+            ErrTxt.validate_strings(encrypted, key)
             return self.core.decrypt(encrypted, key, size)
         except (InvalidKey,
                 AlreadyFinalized,
                 UnsupportedAlgorithm,
                 ValueError) as err:
             self.core.raise_value_error(ERR_DECRYPTION, err, MODE)
-    
-    @staticmethod
-    def validate_strings(*args) -> None:
-        """Validates that each argument provided is a string.
-
-        Parameters:
-            *args: Variable length argument list intended to be strings.
-        Raises (TypeError):
-            If any argument is not a string, indicating the argument number
-            and its incorrect type.
-        """
-        for arg_id, string in enumerate(args):
-            if not isinstance(string, str):
-                raise TypeError(
-                    ERR_INVALID_STR.format(arg_id + 1, str(type(string)))
-                )
