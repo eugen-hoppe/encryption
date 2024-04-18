@@ -5,12 +5,13 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 
 from core.symmetric.interface import SymmetricEncryption
+from core.symmetric.models import Options
 
 
 class ChaCha20(SymmetricEncryption):
-    def encrypt(self, payload: str, key: str, size: int) -> str:
+    def encrypt(self, payload: str, key: str, options: Options) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
-        nonce = os.urandom(size)
+        nonce = os.urandom(options.key_size)
         cipher = Cipher(
             algorithms.ChaCha20(key_bytes, nonce),
             mode=None,
@@ -22,11 +23,11 @@ class ChaCha20(SymmetricEncryption):
         encrypted_nonce = nonce + encrypted
         return base64.urlsafe_b64encode(encrypted_nonce).decode('utf-8')
 
-    def decrypt(self, encrypted: str, key: str, size: int) -> str:
+    def decrypt(self, encrypted: str, key: str, options: Options) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_nonce = base64.urlsafe_b64decode(encrypted)
-        nonce = encrypted_nonce[:size]
-        encrypted_data = encrypted_nonce[size:]
+        nonce = encrypted_nonce[:options.key_size]
+        encrypted_data = encrypted_nonce[options.key_size:]
         cipher = Cipher(
             algorithms.ChaCha20(key_bytes, nonce),
             mode=None,
