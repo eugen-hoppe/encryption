@@ -5,17 +5,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from core.symmetric.interface import SymmetricEncryption, AbstractKey, Mode
+from core.symmetric.interface import SymmetricEncryption, AbstractKey
 from core.symmetric.models import Options, Access
-from utils.exceptions import ErrTxt, TryExceptKeys
+from settings.constants.exceptions import TryExceptKeys
 from utils.error_handling import try_except
-
-
-MODE = Mode.PRODUCTION
-
-DEFAULT_NONCE_OR_PADDING = 16
-DEFAULT_KEY_GENERATION_LENGTH = 32
-DEFAULT_KEY_GENERATION_ITERATIONS = 100_000
+from utils.validation import validate_strings
 
 
 class Key(SymmetricEncryption, AbstractKey):
@@ -27,14 +21,14 @@ class Key(SymmetricEncryption, AbstractKey):
     def encrypt(
         self, payload: str, key: str | Access, options: Options = Options()
     ) -> str:
-        ErrTxt.validate_strings(payload, str(key))
+        validate_strings(payload, str(key))
         return self.core.encrypt(payload, str(key), options=options)
 
     @try_except(**TryExceptKeys.DECRYPT_ERROR.kw())
     def decrypt(
         self, payload: str, key: str | Access, options: Options = Options()
     ) -> str:
-        ErrTxt.validate_strings(payload, str(key))
+        validate_strings(payload, str(key))
         return self.core.decrypt(payload, str(key), options)
 
     @try_except(**TryExceptKeys.GENERATE_ERROR.kw())

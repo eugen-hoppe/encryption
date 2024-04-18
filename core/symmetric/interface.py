@@ -1,12 +1,6 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 
 from core.symmetric.models import Options, Access
-
-
-class Mode(str, Enum):  # TODO: Configuration
-    PRODUCTION: str = "production"
-    DEVELOPMENT: str = "development"
 
 
 class AbstractKey(ABC):

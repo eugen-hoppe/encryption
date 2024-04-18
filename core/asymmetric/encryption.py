@@ -1,8 +1,9 @@
 from typing import Type, Optional
 
 from core.asymmetric.interface import AsymmetricEncryption, AbstractKeys
-from utils.exceptions import TryExceptKeys, ErrTxt
+from settings.constants.exceptions import TryExceptKeys, ErrTxt
 from utils.error_handling import try_except
+from utils.validation import validate_strings
 
 
 class Keys(AsymmetricEncryption, AbstractKeys):
@@ -17,12 +18,12 @@ class Keys(AsymmetricEncryption, AbstractKeys):
         get_pw: bool = False
     ) -> tuple[str, str, Optional[str]]:
         if pw is not None:
-            ErrTxt.validate_strings(pw)
+            validate_strings(pw)
         return self.core.generate(pw, get_pw)
 
     @try_except(**TryExceptKeys.ENCRYPT_ERROR.kw())
     def encrypt(self, payload: str, key: str) -> str:
-        ErrTxt.validate_strings(payload, key)
+        validate_strings(payload, key)
         return self.core.encrypt(key, payload)
 
     @try_except(**TryExceptKeys.DECRYPT_ERROR.kw())
@@ -32,9 +33,9 @@ class Keys(AsymmetricEncryption, AbstractKeys):
         key: str,
         pw: Optional[str] = None
     ) -> str:
-        ErrTxt.validate_strings(encrypted, key)
+        validate_strings(encrypted, key)
         if pw:
-            ErrTxt.validate_strings(pw)
+            validate_strings(pw)
         return self.core.decrypt(key, encrypted, pw)
 
     def sign(self, private_key_pem: str, message: str, pw: str):
