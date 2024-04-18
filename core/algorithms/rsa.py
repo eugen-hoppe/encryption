@@ -23,25 +23,21 @@ class RSA(AsymmetricEncryption):
             key_size=2048,
         )
         public_key = private_key.public_key()
-
         if pw:
             encryption_algorithm = BestAvailableEncryption(pw.encode())
         else:
             encryption_algorithm = NoEncryption()
-
         private_key_pem = private_key.private_bytes(
             encoding=Encoding.PEM,
             format=PrivateFormat.PKCS8,
             encryption_algorithm=encryption_algorithm,
-        ).decode()
-
+        )
         public_key_pem = public_key.public_bytes(
             encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-        ).decode()
-
+        )
         if get_pw and pw:
-            return private_key_pem, public_key_pem, pw
-        return private_key_pem, public_key_pem, None
+            return private_key_pem.decode(), public_key_pem.decode(), pw
+        return private_key_pem.decode(), public_key_pem.decode(), None
 
     def encrypt(self, public_key_pem: str, plaintext: str):
         public_key = load_pem_public_key(public_key_pem.encode())
