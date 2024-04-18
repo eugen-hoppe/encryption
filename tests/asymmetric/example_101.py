@@ -5,7 +5,7 @@ from asymmetric.rsa import RSA
 PASSWORD = "123Passw"
 
 
-def main(password: str | None = None):
+def run_test(password: str | None = None):
     rsa_keys = Keys(RSA)
     
     private_key_pem, public_key_pem, pw = rsa_keys.generate(
@@ -26,9 +26,3 @@ def main(password: str | None = None):
     
     print("Signature:", signature)
     print("Signature valid:", is_valid)
-
-
-if __name__ == "__main__":
-    PASSWORD = "123Passw"
-
-    main(PASSWORD)

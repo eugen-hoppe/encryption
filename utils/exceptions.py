@@ -13,9 +13,6 @@ from utils.error_handling import TryExcEnum, TryExceptConf
 class ErrTxt(str, Enum):
     ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
 
-    def fmt(self, *args, **kwargs):  # REMOVE
-        return self.format(*args, **kwargs)
-
     def validate_strings(self, *args) -> None:
         """Validates that each argument provided is a string.
 
