@@ -2,7 +2,7 @@ import os
 
 from typing import Type
 
-from symmetric.interface import SymmetricEncryption, GenericKey, Mode
+from core.symmetric.interface import SymmetricEncryption, GenericKey, Mode
 from utils.exceptions import ErrTxt, TryExceptKeys
 from utils.error_handling import try_except
 

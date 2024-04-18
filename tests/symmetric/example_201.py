@@ -1,6 +1,6 @@
 import os
 
-from symmetric import encryption, aes, cc
+from core.symmetric import encryption, aes, cc
 
 
 def test_encryption(index, enc, print_at = 5) -> None:

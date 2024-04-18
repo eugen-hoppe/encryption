@@ -1,5 +1,5 @@
-from symmetric.encryption import Key
-from symmetric.aes import AES256
+from core.symmetric.encryption import Key
+from core.symmetric.aes import AES256
 
 
 PASSWORT = "Pa$sW0rT"
