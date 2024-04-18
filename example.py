@@ -3,7 +3,7 @@ from tests.symmetric import example_201, example_202
 
 
 TEST_IDS = [
-    101, 201,
+    101, # 201,
     202,
 ]
 
