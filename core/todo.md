@@ -4,6 +4,6 @@
 - [x] validate
 - [ ] docstrings
 - [ ] exception handling
-- [ ] module for algorithms
+- [x] module for algorithms
 - [ ] tests
 - [ ] README.md
