@@ -17,12 +17,12 @@ class Keys:
         get_pw: bool = False
     ) -> tuple[str, str, Optional[str]]:
         if pw is not None:
-            self.validate_strings(pw)
+            ErrTxt.validate_strings(pw)
         return self.core.generate_keys(pw, get_pw)
 
     @try_except(**TryExceptKeys.ENCRYPT_ERROR.kw())
     def encrypt(self, payload: str, key: str) -> str:
-        self.validate_strings(payload, key)
+        ErrTxt.validate_strings(payload, key)
         return self.core.encrypt(key, payload)
 
     @try_except(**TryExceptKeys.DECRYPT_ERROR.kw())
@@ -32,9 +32,9 @@ class Keys:
         key: str,
         pw: Optional[str] = None
     ) -> str:
-        self.validate_strings(encrypted, key)
+        ErrTxt.validate_strings(encrypted, key)
         if pw:
-            self.validate_strings(pw)
+            ErrTxt.validate_strings(pw)
         return self.core.decrypt(key, encrypted, pw)
 
     def sign(self, private_key_pem: str, message: str, pw: str):
@@ -42,11 +42,3 @@ class Keys:
     
     def validate(self, public_key_pem: str, message: str, signature: str):
         return self.core.validate(public_key_pem, message, signature)
-
-    @staticmethod
-    def validate_strings(*args) -> None:
-        for arg_id, string in enumerate(args):
-            if not isinstance(string, str):
-                raise TypeError(
-                    ErrTxt.ERR_INVALID_STR.fmt(arg_id + 1, str(type(string)))
-                )
