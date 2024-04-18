@@ -106,30 +106,3 @@ class SymmetricEncryption(ABC):
         salt = salt if get_salt is True else None
         password = pw if get_pw is True else None
         return key_str, salt, password
-    
-    @staticmethod
-    def raise_value_error(  # REFACTOR THIS
-        log: str,
-        error: Exception,
-        level: Mode = Mode.PRODUCTION
-    ) -> None:
-        """Raises a ValueError based on the mode and the error occurred.
-
-        Parameters:
-            log (str): 
-                The log message detailing the context or operation that caused
-                the error.
-            error (Exception):
-                The original exception that was caught.
-            level (Mode):
-                The operation mode that determines the detail level of the
-                error message.
-        Raises (ValueError):
-            With a formatted message that includes the log, and,
-            depending on the mode, the original error message.
-        """
-        error_message = f"{level.value}: {log}"
-        if level.value == Mode.DEVELOPMENT:
-            raise ValueError(f"{error_message}: {str(error)}") from error
-        else:
-            raise ValueError(error_message) from None
