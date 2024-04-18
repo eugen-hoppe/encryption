@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.serialization import (
     BestAvailableEncryption,
     PublicFormat,
     load_pem_public_key,
-    load_pem_private_key
+    load_pem_private_key,
 )
 from cryptography.hazmat.primitives import hashes
 
@@ -32,12 +32,11 @@ class RSA(AsymmetricEncryption):
         private_key_pem = private_key.private_bytes(
             encoding=Encoding.PEM,
             format=PrivateFormat.PKCS8,
-            encryption_algorithm=encryption_algorithm
+            encryption_algorithm=encryption_algorithm,
         ).decode()
 
         public_key_pem = public_key.public_bytes(
-            encoding=Encoding.PEM,
-            format=PublicFormat.SubjectPublicKeyInfo
+            encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
         ).decode()
 
         if get_pw and pw:
@@ -51,24 +50,24 @@ class RSA(AsymmetricEncryption):
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None
-            )
+                label=None,
+            ),
         )
-        return base64.b64encode(ciphertext).decode('utf-8')
+        return base64.b64encode(ciphertext).decode("utf-8")
 
     def decrypt(self, private_key_pem: str, ciphertext: str, pw: str = None):
         private_key = load_pem_private_key(
             private_key_pem.encode(),
             password=(pw.encode() if pw else None),
-            backend=None
+            backend=None,
         )
         plaintext = private_key.decrypt(
             base64.b64decode(ciphertext),
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None
-            )
+                label=None,
+            ),
         )
         return plaintext.decode()
 
@@ -78,21 +77,18 @@ class RSA(AsymmetricEncryption):
         private_key = load_pem_private_key(
             private_key_pem.encode(),
             password=(password.encode() if password else None),
-            backend=None
+            backend=None,
         )
         signature = private_key.sign(
             message.encode(),
             padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256()
+            hashes.SHA256(),
         )
-        return base64.b64encode(signature).decode('utf-8')
+        return base64.b64encode(signature).decode("utf-8")
 
-    def validate(
-        self, public_key_pem: str, message: str, signature: str
-    ) -> bool:
+    def validate(self, public_key_pem: str, message: str, signature: str) -> bool:
         public_key = load_pem_public_key(public_key_pem.encode())
         try:
             public_key.verify(
@@ -100,9 +96,9 @@ class RSA(AsymmetricEncryption):
                 message.encode(),
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH
+                    salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256()
+                hashes.SHA256(),
             )
             return True
         except InvalidSignature:

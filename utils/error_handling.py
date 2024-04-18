@@ -6,7 +6,7 @@ from functools import wraps
 
 @dataclass
 class TryExceptConf:
-    errs: tuple[type[Exception], ...] = (Exception)
+    errs: tuple[type[Exception], ...] = Exception
     raise_: type[Exception] | None = None
     txt: str = ""
 
@@ -23,13 +23,14 @@ class TryExcEnum(Enum):
 def try_except(
     errs: Tuple[Type[Exception], ...] = (Exception,),
     raise_: Optional[Type[Exception]] = None,
-    txt: str = ""
+    txt: str = "",
 ) -> Callable:
     """A decorator that wraps a function to handle exceptions
 
     docs:
     - https://gist.github.com/eugen-hoppe/c20688d17c7682cf1284718a655d0e0d
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: any, **kwargs: any) -> any:
@@ -41,5 +42,7 @@ def try_except(
                     msg_ = txt + " (INFO: add '#debug' for traceback chain)"
                     raise raise_(msg_) from from_error
                 raise err
+
         return wrapper
+
     return decorator

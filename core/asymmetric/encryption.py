@@ -13,9 +13,7 @@ class Keys(AsymmetricEncryption, AbstractKeys):
 
     @try_except(**TryExceptKeys.GENERATE_ERROR.kw())
     def generate(
-        self,
-        pw: Optional[str] = None,
-        get_pw: bool = False
+        self, pw: Optional[str] = None, get_pw: bool = False
     ) -> tuple[str, str, Optional[str]]:
         if pw is not None:
             validate_strings(pw)
@@ -27,12 +25,7 @@ class Keys(AsymmetricEncryption, AbstractKeys):
         return self.core.encrypt(key, payload)
 
     @try_except(**TryExceptKeys.DECRYPT_ERROR.kw())
-    def decrypt(
-        self,
-        encrypted: str,
-        key: str,
-        pw: Optional[str] = None
-    ) -> str:
+    def decrypt(self, encrypted: str, key: str, pw: Optional[str] = None) -> str:
         validate_strings(encrypted, key)
         if pw:
             validate_strings(pw)
@@ -40,6 +33,6 @@ class Keys(AsymmetricEncryption, AbstractKeys):
 
     def sign(self, private_key_pem: str, message: str, pw: str):
         return self.core.sign(private_key_pem, message, pw)
-    
+
     def validate(self, public_key_pem: str, message: str, signature: str):
         return self.core.validate(public_key_pem, message, signature)

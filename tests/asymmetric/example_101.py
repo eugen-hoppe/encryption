@@ -7,10 +7,8 @@ PASSWORD = "123Passw"
 
 def run_test(password: str | None = None):
     rsa_keys = Keys(RSA)
-    
-    private_key_pem, public_key_pem, pw = rsa_keys.generate(
-        password, get_pw=True
-    )
+
+    private_key_pem, public_key_pem, pw = rsa_keys.generate(password, get_pw=True)
     print(public_key_pem)
 
     original_message = "Secret Message: RSA-Encryption"
@@ -23,6 +21,6 @@ def run_test(password: str | None = None):
 
     signature = rsa_keys.sign(private_key_pem, original_message, pw)
     is_valid = rsa_keys.validate(public_key_pem, original_message, signature)
-    
+
     print("Signature:", signature)
     print("Signature valid:", is_valid)

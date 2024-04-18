@@ -5,11 +5,11 @@ from core.symmetric import encryption
 from core.symmetric.models import Options
 
 
-def test_encryption(index, enc, print_at = 5) -> None:
+def test_encryption(index, enc, print_at=5) -> None:
     encryption_ = encryption.Key(enc)
     access = encryption_.generate(
         pw=os.urandom(index).hex(),
-        options=Options(key_gen_get_pw=True, key_gen_get_salt=True)
+        options=Options(key_gen_get_pw=True, key_gen_get_salt=True),
     )
     salt, pw = access.salt, access.password
     message = f"Message with {encryption_.algorithm } {os.urandom(index).hex()}"

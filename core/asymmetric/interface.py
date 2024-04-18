@@ -13,8 +13,7 @@ class AbstractKeys(ABC):
 class AsymmetricEncryption(ABC):
     @abstractmethod
     def generate(self, pw):
-        """Generates a Key-Pair(Public/Private)
-        """
+        """Generates a Key-Pair(Public/Private)"""
         pass
 
     @abstractmethod
@@ -33,10 +32,14 @@ class AsymmetricEncryption(ABC):
 
     @abstractmethod
     def sign(self, private_key, message):
-        """Signs a message using the private key."""
+        """
+        Signs a message using the private key.
+        """
         pass
 
     @abstractmethod
     def validate(self, public_key, message, signature):
-        """Validates a signature using the public key."""
+        """
+        Validates a signature using the public key.
+        """
         pass

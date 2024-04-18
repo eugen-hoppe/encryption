@@ -4,7 +4,7 @@ from cryptography.exceptions import (
     InvalidKey,
     AlreadyFinalized,
     UnsupportedAlgorithm,
-    InvalidSignature
+    InvalidSignature,
 )
 
 from utils.error_handling import TryExcEnum, TryExceptConf
@@ -21,22 +21,14 @@ class ErrTxt(str, Enum):
 
 class TryExceptKeys(TryExcEnum):
     GENERATE_ERROR = TryExceptConf(
-        errs=(
-            ValueError,
-            TypeError,
-            UnsupportedAlgorithm
-        ), 
-        raise_= ValueError,
-        txt=f"Key generation failed {DEBUG_LABEL}"
+        errs=(ValueError, TypeError, UnsupportedAlgorithm),
+        raise_=ValueError,
+        txt=f"Key generation failed {DEBUG_LABEL}",
     )
     ENCRYPT_ERROR = TryExceptConf(
-        errs=(
-            ValueError,
-            TypeError,
-            UnsupportedAlgorithm
-        ), 
-        raise_= ValueError,
-        txt=f"Encryption failed{DEBUG_LABEL}"
+        errs=(ValueError, TypeError, UnsupportedAlgorithm),
+        raise_=ValueError,
+        txt=f"Encryption failed{DEBUG_LABEL}",
     )
     DECRYPT_ERROR = TryExceptConf(
         errs=(
@@ -45,8 +37,8 @@ class TryExceptKeys(TryExcEnum):
             InvalidKey,
             UnsupportedAlgorithm,
             InvalidSignature,
-            AlreadyFinalized
+            AlreadyFinalized,
         ),
-        raise_= ValueError,
-        txt=f"Decryption failed{DEBUG_LABEL}"
+        raise_=ValueError,
+        txt=f"Decryption failed{DEBUG_LABEL}",
     )

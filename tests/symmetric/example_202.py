@@ -16,18 +16,16 @@ def run_test():
     # ========
     encryption_ = Key(AES256)
 
-
     # Generate Key
     # ============
     access = encryption_.generate(
-        PASSWORT,
-        SALT,
-        Options(key_gen_get_salt=True, key_gen_get_pw=True)
+        PASSWORT, SALT, Options(key_gen_get_salt=True, key_gen_get_pw=True)
     )
-    print(BR + "KEY:", access, BR + "SALT:", access.salt, BR + "PW:", access.password, BR)
+    print(
+        BR + "KEY:", access, BR + "SALT:", access.salt, BR + "PW:", access.password, BR
+    )
 
     print(type(access))
-
 
     # Encrypt and Decrypt with Passwort
     # =================================
@@ -38,16 +36,13 @@ def run_test():
 
     print(encrypted_with_pw, BR, "|", BR, " -> ", decrypted_with_pw, BR)
 
-
     # Encrypt and Decrypt with Key
     # ============================
     message_2 = "... or use key directly as string"
     persistant_key = "m8569Q2yfE1L9NTD1PwYP3m4TkPR31q5ZtSL0cUkV5A="
 
-    encrypted_with_key = encryption_.encrypt(  # Encrypt
-        message_2, persistant_key
-    )
-    decrypted_with_key = encryption_.decrypt(    # Decrypt
+    encrypted_with_key = encryption_.encrypt(message_2, persistant_key)  # Encrypt
+    decrypted_with_key = encryption_.decrypt(  # Decrypt
         encrypted_with_key, persistant_key
     )
     print(encrypted_with_key, BR, "|", BR, " -> ", decrypted_with_key, BR)

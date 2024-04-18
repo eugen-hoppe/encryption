@@ -38,7 +38,6 @@ class AbstractKey(ABC):
         pass
 
 
-
 class SymmetricEncryption(ABC):
     @abstractmethod
     def encrypt(self, payload: str, key: str | Access, options: Options) -> str:
@@ -49,7 +48,7 @@ class SymmetricEncryption(ABC):
 
         ChaCha20: Encrypts a given payload using ChaCha20 encryption.
         https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18a
-        
+
         Parameters:
             payload (str): The plaintext data to encrypt.
             key (str): The cryptogsraphic key used for encryption.
@@ -65,7 +64,7 @@ class SymmetricEncryption(ABC):
 
         AES: Decrypts encrypted message using AES-256 encryption in CBC mode.
         https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17b
-    
+
         ChaCha20: Encrypts a given payload using ChaCha20 encryption.
         https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18b
 

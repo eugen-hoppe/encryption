@@ -35,19 +35,19 @@ class Key(SymmetricEncryption, AbstractKey):
     def generate(self, pw: str, salt: str = "", options: Options = Options()) -> Access:
         if salt == "":
             salt = os.urandom(16).hex()
-        salt_bytes = salt.encode('utf-8')
+        salt_bytes = salt.encode("utf-8")
         backend = default_backend()
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=options.key_gen_length,
             salt=salt_bytes,
             iterations=options.key_gen_iterations,
-            backend=backend
+            backend=backend,
         )
-        key_bytes = kdf.derive(pw.encode('utf-8'))
+        key_bytes = kdf.derive(pw.encode("utf-8"))
         access = Access(
-            key=base64.urlsafe_b64encode(key_bytes).decode('utf-8'),
+            key=base64.urlsafe_b64encode(key_bytes).decode("utf-8"),
             salt=salt if options.key_gen_get_salt is True else None,
-            password=pw if options.key_gen_get_pw is True else None
+            password=pw if options.key_gen_get_pw is True else None,
         )
         return access
