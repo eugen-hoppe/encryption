@@ -1,11 +1,11 @@
 from typing import Type, Optional
 
-from core.asymmetric.interface import AsymmetricEncryption
+from core.asymmetric.interface import AsymmetricEncryption, AbstractKeys
 from utils.exceptions import TryExceptKeys, ErrTxt
 from utils.error_handling import try_except
 
 
-class Keys:
+class Keys(AsymmetricEncryption, AbstractKeys):
     def __init__(self, algorithm: Type[AsymmetricEncryption]):
         self.algorithm: str = algorithm.__name__
         self.core: AsymmetricEncryption = algorithm()
@@ -18,7 +18,7 @@ class Keys:
     ) -> tuple[str, str, Optional[str]]:
         if pw is not None:
             ErrTxt.validate_strings(pw)
-        return self.core.generate_keys(pw, get_pw)
+        return self.core.generate(pw, get_pw)
 
     @try_except(**TryExceptKeys.ENCRYPT_ERROR.kw())
     def encrypt(self, payload: str, key: str) -> str:

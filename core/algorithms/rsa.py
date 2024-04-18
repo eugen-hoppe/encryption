@@ -17,7 +17,7 @@ from core.asymmetric.interface import AsymmetricEncryption
 
 
 class RSA(AsymmetricEncryption):
-    def generate_keys(self, pw: str = None, get_pw: bool = False):
+    def generate(self, pw: str = None, get_pw: bool = False):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=2048,

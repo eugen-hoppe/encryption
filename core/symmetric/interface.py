@@ -8,12 +8,12 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
-class Mode(str, Enum):
+class Mode(str, Enum):  # TODO: Configuration
     PRODUCTION: str = "production"
     DEVELOPMENT: str = "development"
 
 
-class GenericKey(ABC):
+class AbstractKey(ABC):
     @abstractmethod
     def __init__(self, algorithm: type["SymmetricEncryption"]):
         """Initializes the Key object with a specific encryption class

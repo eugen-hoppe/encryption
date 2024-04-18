@@ -1,9 +1,18 @@
 from abc import ABC, abstractmethod
 
 
+class AbstractKeys(ABC):
+    @abstractmethod
+    def __init__(self, algorithm: type["AsymmetricEncryption"]):
+        """
+        Initializes the Keys object with a specific encryption class
+        """
+        pass
+
+
 class AsymmetricEncryption(ABC):
     @abstractmethod
-    def generate_keys(self, pw):
+    def generate(self, pw):
         """Generates a Key-Pair(Public/Private)
         """
         pass

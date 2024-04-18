@@ -2,7 +2,7 @@ import os
 
 from typing import Type
 
-from core.symmetric.interface import SymmetricEncryption, GenericKey, Mode
+from core.symmetric.interface import SymmetricEncryption, AbstractKey, Mode
 from utils.exceptions import ErrTxt, TryExceptKeys
 from utils.error_handling import try_except
 
@@ -14,7 +14,7 @@ DEFAULT_KEY_GENERATION_LENGTH = 32
 DEFAULT_KEY_GENERATION_ITERATIONS = 100_000
 
 
-class Key(SymmetricEncryption, GenericKey):
+class Key(SymmetricEncryption, AbstractKey):
     def __init__(self, algorithm: Type[SymmetricEncryption]):
         self.algorithm: str = algorithm.__name__
         self.core: SymmetricEncryption = algorithm()
