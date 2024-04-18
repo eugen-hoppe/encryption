@@ -10,6 +10,9 @@ from cryptography.exceptions import (
 from utils.error_handling import TryExcEnum, TryExceptConf
 
 
+DEBUG_LABEL = " #debug"
+
+
 class ErrTxt(str, Enum):
     ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
 
@@ -24,7 +27,10 @@ class ErrTxt(str, Enum):
         """
         for arg_id, string in enumerate(args):
             if not isinstance(string, str):
-                raise TypeError(self.fmt(arg_id + 1, str(type(string))))
+                error_text = ErrTxt.ERR_INVALID_STR.value.format(
+                    arg_id + 1, str(type(string))
+                )
+                raise TypeError(error_text)
 
 
 class TryExceptKeys(TryExcEnum):
@@ -35,7 +41,7 @@ class TryExceptKeys(TryExcEnum):
             UnsupportedAlgorithm
         ), 
         raise_= ValueError,
-        txt="Key generation failed"
+        txt="Key generation failed" + DEBUG_LABEL
     )
     ENCRYPT_ERROR = TryExceptConf(
         errs=(
@@ -44,7 +50,7 @@ class TryExceptKeys(TryExcEnum):
             UnsupportedAlgorithm
         ), 
         raise_= ValueError,
-        txt="Encryption failed"
+        txt="Encryption failed" + DEBUG_LABEL
     )
     DECRYPT_ERROR = TryExceptConf(
         errs=(
@@ -56,5 +62,5 @@ class TryExceptKeys(TryExcEnum):
             AlreadyFinalized
         ),
         raise_= ValueError,
-        txt="Decryption failed"
+        txt="Decryption failed" + DEBUG_LABEL
     )

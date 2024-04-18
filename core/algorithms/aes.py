@@ -5,12 +5,13 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from core.symmetric.interface import SymmetricEncryption
+from core.symmetric.models import Options
 
 
 class AES256(SymmetricEncryption):
-    def encrypt(self, payload: str, key: str, size: int) -> str:
+    def encrypt(self, payload: str, key: str, options: Options) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
-        iv = os.urandom(size)
+        iv = os.urandom(options.key_size)
         cipher = Cipher(
             algorithms.AES(key_bytes),
             modes.CBC(iv),
@@ -18,7 +19,7 @@ class AES256(SymmetricEncryption):
         )
         encryptor = cipher.encryptor()
         payload_bytes = payload.encode('utf-8')
-        padding_length = size - len(payload_bytes) % size
+        padding_length = options.key_size - len(payload_bytes) % options.key_size
         padded_payload = payload_bytes + bytes(
             [padding_length] * padding_length
         )
@@ -26,11 +27,11 @@ class AES256(SymmetricEncryption):
         encrypted_iv = iv + encrypted
         return base64.urlsafe_b64encode(encrypted_iv).decode('utf-8')
 
-    def decrypt(self, encrypted: str, key: str, size: int) -> str:
+    def decrypt(self, encrypted: str, key: str, options: Options) -> str:
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_iv = base64.urlsafe_b64decode(encrypted)
-        iv = encrypted_iv[:size]
-        encrypted_data = encrypted_iv[size:]
+        iv = encrypted_iv[:options.key_size]
+        encrypted_data = encrypted_iv[options.key_size:]
         cipher = Cipher(
             algorithms.AES(key_bytes),
             modes.CBC(iv),

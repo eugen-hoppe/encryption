@@ -1,11 +1,7 @@
-import base64
-
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from core.symmetric.models import Options, Access
 
 
 class Mode(str, Enum):  # TODO: Configuration
@@ -30,10 +26,28 @@ class AbstractKey(ABC):
         """
         pass
 
+    @abstractmethod
+    def generate(pw: str, salt: str = "", options: Options = Options()) -> Access:
+        """Generates a cryptographic key (password-based) via PBKDF2 function
+
+        Parameters:
+            pw (str): The password from which to derive the key.
+            salt (str): The salt to use in the derivation process.
+            get_salt (bool): If True, returns the salt used.
+            get_pw (bool): If True, returns the original password.
+            iterations (int): Iterations to use in the derivation.
+            key_length (int): The desired length of the derived key in bytes.
+        Returns (tuple[str, str | None, str | None]):
+            A tuple containing the derived key as a base64-encoded string,
+            optionally the salt, and optionally the password.
+        """
+        pass
+
+
 
 class SymmetricEncryption(ABC):
     @abstractmethod
-    def encrypt(self, payload: str, key: str, size: int) -> str:
+    def encrypt(self, payload: str, key: str | Access, options: Options) -> str:
         """Encrypts the given payload with the specified key and block size
 
         AES: Encrypts a given payload using AES-256 encryption in CBC mode.
@@ -52,7 +66,7 @@ class SymmetricEncryption(ABC):
         pass
 
     @abstractmethod
-    def decrypt(self, encrypted: str, key: str, size: int) -> str:
+    def decrypt(self, encrypted: str | Access, key: str, options: Options) -> str:
         """Decrypts encrypted data with the specified key and block size
 
         AES: Decrypts encrypted message using AES-256 encryption in CBC mode.
@@ -69,40 +83,3 @@ class SymmetricEncryption(ABC):
             The decrypted data as a string.
         """
         pass
-
-    @staticmethod
-    def generate(
-        pw: str,
-        salt: str,
-        get_salt: bool,
-        get_pw: bool,
-        iterations: int,
-        key_lenght: int
-    ) -> tuple[str, str | None, str | None]:
-        """Generates a cryptographic key (password-based) via PBKDF2 function
-
-        Parameters:
-            pw (str): The password from which to derive the key.
-            salt (str): The salt to use in the derivation process.
-            get_salt (bool): If True, returns the salt used.
-            get_pw (bool): If True, returns the original password.
-            iterations (int): Iterations to use in the derivation.
-            key_length (int): The desired length of the derived key in bytes.
-        Returns (tuple[str, str | None, str | None]):
-            A tuple containing the derived key as a base64-encoded string,
-            optionally the salt, and optionally the password.
-        """
-        salt_bytes = salt.encode('utf-8')
-        backend = default_backend()
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=key_lenght,
-            salt=salt_bytes,
-            iterations=iterations,
-            backend=backend
-        )
-        key_bytes = kdf.derive(pw.encode('utf-8'))
-        key_str = base64.urlsafe_b64encode(key_bytes).decode('utf-8')
-        salt = salt if get_salt is True else None
-        password = pw if get_pw is True else None
-        return key_str, salt, password

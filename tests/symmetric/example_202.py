@@ -1,4 +1,5 @@
 from core.symmetric.encryption import Key
+from core.symmetric.models import Options, Access
 from core.algorithms.aes import AES256
 
 
@@ -18,21 +19,22 @@ def run_test():
 
     # Generate Key
     # ============
-    key, salt, pw = encryption_.generate(
+    access = encryption_.generate(
         PASSWORT,
         SALT,
-        get_salt=True,
-        get_pw=True
+        Options(key_gen_get_salt=True, key_gen_get_pw=True)
     )
-    print(BR + "KEY:", key, BR + "SALT:", salt, BR + "PW:", pw, BR)
+    print(BR + "KEY:", access, BR + "SALT:", access.salt, BR + "PW:", access.password, BR)
+
+    print(type(access))
 
 
     # Encrypt and Decrypt with Passwort
     # =================================
     message_1 = "Encrypt secret message with paswort and salt ..."
 
-    encrypted_with_pw = encryption_.encrypt(message_1, key)  # Encrypt
-    decrypted_with_pw = encryption_.decrypt(encrypted_with_pw, key)  # Decrypt
+    encrypted_with_pw = encryption_.encrypt(message_1, access)  # Encrypt
+    decrypted_with_pw = encryption_.decrypt(encrypted_with_pw, access.key)  # Decrypt
 
     print(encrypted_with_pw, BR, "|", BR, " -> ", decrypted_with_pw, BR)
 
