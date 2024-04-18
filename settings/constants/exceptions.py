@@ -12,7 +12,7 @@ from settings.config import MODE
 from settings.constants.options import Mode
 
 
-DEBUG_LABEL = "#debug" if MODE == Mode.DEVELOPMENT else "#prod"
+DEBUG_TAG = "#debug" if MODE == Mode.DEVELOPMENT else "#prod"
 
 
 class ErrTxt(str, Enum):
@@ -21,14 +21,22 @@ class ErrTxt(str, Enum):
 
 class TryExceptKeys(TryExcEnum):
     GENERATE_ERROR = TryExceptConf(
-        errs=(ValueError, TypeError, UnsupportedAlgorithm),
+        errs=(
+            ValueError,
+            TypeError,
+            UnsupportedAlgorithm,
+        ),
         raise_=ValueError,
-        txt=f"Key generation failed {DEBUG_LABEL}",
+        txt=f"Key generation failed {DEBUG_TAG}",
     )
     ENCRYPT_ERROR = TryExceptConf(
-        errs=(ValueError, TypeError, UnsupportedAlgorithm),
+        errs=(
+            ValueError,
+            TypeError,
+            UnsupportedAlgorithm,
+        ),
         raise_=ValueError,
-        txt=f"Encryption failed{DEBUG_LABEL}",
+        txt=f"Encryption failed {DEBUG_TAG}",
     )
     DECRYPT_ERROR = TryExceptConf(
         errs=(
@@ -40,5 +48,5 @@ class TryExceptKeys(TryExcEnum):
             AlreadyFinalized,
         ),
         raise_=ValueError,
-        txt=f"Decryption failed{DEBUG_LABEL}",
+        txt=f"Decryption failed {DEBUG_TAG}",
     )
