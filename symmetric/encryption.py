@@ -8,7 +8,7 @@ from cryptography.exceptions import (
     UnsupportedAlgorithm
 )
 
-from symmetric.interface import SymmetricEncryption, Mode
+from symmetric.interface import SymmetricEncryption, GenericKey, Mode
 from utils.exceptions import ErrTxt
 
 
@@ -24,20 +24,8 @@ ERR_DECRYPTION = "Decryption failed"
 ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
 
 
-class Key(SymmetricEncryption):
+class Key(SymmetricEncryption, GenericKey):
     def __init__(self, algorithm: Type[SymmetricEncryption]):
-        """Initializes the Key object with a specific encryption class
-
-        Parameters:
-            algorithm (Type[SymmetricEncryption]):
-                The class of the encryption algorithm to be used for
-                cryptographic operations.
-        Attributes:
-            algorithm (str):
-                The name of the encryption algorithm class.
-            core (SymmetricEncryption):
-                An instance of the specified encryption algorithm.
-        """
         self.algorithm: str = algorithm.__name__
         self.core: SymmetricEncryption = algorithm()
 

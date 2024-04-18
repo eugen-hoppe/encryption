@@ -13,14 +13,38 @@ class Mode(str, Enum):
     DEVELOPMENT: str = "development"
 
 
+class GenericKey(ABC):
+    @abstractmethod
+    def __init__(self, algorithm: type["SymmetricEncryption"]):
+        """Initializes the Key object with a specific encryption class
+
+        Parameters:
+            algorithm (Type[SymmetricEncryption]):
+                The class of the encryption algorithm to be used for
+                cryptographic operations.
+        Attributes:
+            algorithm (str):
+                The name of the encryption algorithm class.
+            core (SymmetricEncryption):
+                An instance of the specified encryption algorithm.
+        """
+        pass
+
+
 class SymmetricEncryption(ABC):
     @abstractmethod
     def encrypt(self, payload: str, key: str, size: int) -> str:
         """Encrypts the given payload with the specified key and block size
 
+        AES: Encrypts a given payload using AES-256 encryption in CBC mode.
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17a
+
+        ChaCha20: Encrypts a given payload using ChaCha20 encryption.
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18a
+        
         Parameters:
             payload (str): The plaintext data to encrypt.
-            key (str): The cryptographic key used for encryption.
+            key (str): The cryptogsraphic key used for encryption.
             size (int): The block size in bytes for the encryption algorithm.
         Returns (str):
             The encrypted data as a string.
@@ -30,6 +54,12 @@ class SymmetricEncryption(ABC):
     @abstractmethod
     def decrypt(self, encrypted: str, key: str, size: int) -> str:
         """Decrypts encrypted data with the specified key and block size
+
+        AES: Decrypts encrypted message using AES-256 encryption in CBC mode.
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17b
+    
+        ChaCha20: Encrypts a given payload using ChaCha20 encryption.
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18b
 
         Parameters:
             encrypted (str): The encrypted data to decrypt.

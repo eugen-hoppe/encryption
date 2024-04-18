@@ -9,10 +9,6 @@ from symmetric.interface import SymmetricEncryption
 
 class ChaCha20(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, size: int) -> str:
-        """Encrypts a given payload using ChaCha20 encryption.
-
-        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18a
-        """
         key_bytes = base64.urlsafe_b64decode(key)
         nonce = os.urandom(size)
         cipher = Cipher(
@@ -27,10 +23,6 @@ class ChaCha20(SymmetricEncryption):
         return base64.urlsafe_b64encode(encrypted_nonce).decode('utf-8')
 
     def decrypt(self, encrypted: str, key: str, size: int) -> str:
-        """Decrypts a encrypted message using ChaCha20 encryption
-
-        https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d18b
-        """
         key_bytes = base64.urlsafe_b64decode(key)
         encrypted_nonce = base64.urlsafe_b64decode(encrypted)
         nonce = encrypted_nonce[:size]
