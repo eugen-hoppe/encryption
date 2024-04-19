@@ -9,11 +9,11 @@ from core.symmetric.models import Options
 
 class EncryptionTestBase(unittest.TestCase):
     def setUp(self):
-        self.key = base64.urlsafe_b64encode(os.urandom(32)).decode('utf-8')
+        self.key = base64.urlsafe_b64encode(os.urandom(32)).decode("utf-8")
         self.options = Options(key_size=16)
         self.payload = "Test data for encryption"
         self.encryption_class: type[AES256] | type[ChaCha20] | None = None
-    
+
     def __skip_test(self):
         if not self.encryption_class:
             self.skipTest("Encryption class not set")
@@ -22,7 +22,7 @@ class EncryptionTestBase(unittest.TestCase):
         self.__skip_test()
         if not self.encryption_class:
             self.fail("Encryption class not set")
-        
+
         encryptor = self.encryption_class()
         encrypted = encryptor.encrypt(self.payload, self.key, self.options)
         decrypted = encryptor.decrypt(encrypted, self.key, self.options)
@@ -33,7 +33,7 @@ class EncryptionTestBase(unittest.TestCase):
         if not self.encryption_class:
             self.fail("Encryption class not set")
 
-        invalid_key = base64.urlsafe_b64encode(b'short_key').decode('utf-8')
+        invalid_key = base64.urlsafe_b64encode(b"short_key").decode("utf-8")
         encryptor = self.encryption_class()
         with self.assertRaises(ValueError):
             encryptor.encrypt(self.payload, invalid_key, self.options)
@@ -61,5 +61,5 @@ class TestChaCha20(EncryptionTestBase):
         self.encryption_class = ChaCha20
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
