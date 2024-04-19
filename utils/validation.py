@@ -4,7 +4,7 @@ from settings.constants.exceptions import ErrTxt
 def validate_strings(*args) -> None:
     """Validation of Strings
 
-    https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17a
+    https://github.com/eugen-hoppe/encryption/blob/main/docs/utils.md#40419b
     """
     for arg_id, string in enumerate(args):
         if not isinstance(string, str):

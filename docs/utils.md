@@ -4,7 +4,7 @@
 
 ### utils.error_handling.try_except
 
-###### d41a
+###### 40419a
 
 [docs: try_except](https://gist.github.com/eugen-hoppe/c20688d17c7682cf1284718a655d0e0d)
 
@@ -12,7 +12,7 @@
 
 ### utils.error_handling.validation.py
 
-###### d41b
+###### 40419b
 
 **Validates each argument provided is a string**
 
