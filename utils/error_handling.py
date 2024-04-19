@@ -27,8 +27,7 @@ def try_except(
 ) -> Callable:
     """A decorator that wraps a function to handle exceptions
 
-    docs:
-    - https://gist.github.com/eugen-hoppe/c20688d17c7682cf1284718a655d0e0d
+    https://github.com/eugen-hoppe/encryption/blob/main/docs/utils.md#40419a
     """
 
     def decorator(func: Callable) -> Callable:
