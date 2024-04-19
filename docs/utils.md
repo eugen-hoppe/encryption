@@ -14,12 +14,13 @@
 
 ###### 40419b
 
-**Validates each argument provided is a string**
+```txt
+Validates each argument provided is a string
 
-**Parameters ( `*args` )**
+  Parameters ( `*args` ):
+    - Variable length argument list intended to be strings.
 
-Variable length argument list intended to be strings.
+  Raises ( `TypeError` ):
+    - If any argument is not a string, indicating the argument number and its incorrect type.
 
-**Raises ( `TypeError` )**
-
-If any argument is not a string, indicating the argument number and its incorrect type.
+```
