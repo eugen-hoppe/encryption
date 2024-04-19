@@ -1,14 +1,10 @@
 from settings.constants.exceptions import ErrTxt
 
 
-def validate_strings(self, *args) -> None:
-    """Validates that each argument provided is a string.
+def validate_strings(*args) -> None:
+    """Validation of Strings
 
-    Parameters:
-        *args: Variable length argument list intended to be strings.
-    Raises (TypeError):
-        If any argument is not a string, indicating the argument number
-        and its incorrect type.
+    https://github.com/eugen-hoppe/encryption/blob/main/docs/v4.md#d17a
     """
     for arg_id, string in enumerate(args):
         if not isinstance(string, str):

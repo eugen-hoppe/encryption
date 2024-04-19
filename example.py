@@ -4,8 +4,9 @@ from tests.hybrid import example_301
 
 
 TEST_IDS = [
-    # 101,  # 201,
-    # 202,
+    101,
+    201,
+    202,
     301,
 ]
 
