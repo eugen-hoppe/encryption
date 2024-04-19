@@ -1,6 +1,6 @@
-from tests.asymmetric import example_101
-from tests.symmetric import example_201, example_202
-from tests.hybrid import example_301
+from tests.examples.asymmetric import example_101
+from tests.examples.symmetric import example_201, example_202
+from tests.examples.hybrid import example_301
 
 
 TEST_IDS = [
@@ -13,7 +13,7 @@ TEST_IDS = [
 
 if __name__ == "__main__":
 
-    if 101 in TEST_IDS:
+    if 101 in TEST_IDS:  # TODO name it example instead test
         example_101.run_test()
 
     if 201 in TEST_IDS:
