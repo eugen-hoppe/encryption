@@ -10,6 +10,9 @@ from core.symmetric.models import Options
 
 class AES256(SymmetricEncryption):
     def encrypt(self, payload: str, key: str, options: Options) -> str:
+        """
+        https://github.com/eugen-hoppe/encryption/blob/main/docs/core.md#40419c
+        """
         key_bytes = base64.urlsafe_b64decode(key)
         iv = os.urandom(options.key_size)
         cipher = Cipher(
