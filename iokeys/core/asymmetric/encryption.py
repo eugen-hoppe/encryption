@@ -1,9 +1,9 @@
 from typing import Type, Optional
 
-from core.asymmetric.interface import AsymmetricEncryption, AbstractKeys
-from settings.constants.exceptions import TryExceptKeys, ErrTxt
-from utils.error_handling import try_except
-from utils.validation import validate_strings
+from iokeys.core.asymmetric.interface import AsymmetricEncryption, AbstractKeys
+from iokeys.settings.constants.exceptions import TryExceptKeys, ErrTxt
+from iokeys.utils.error_handling import try_except
+from iokeys.utils.validation import validate_strings
 
 
 class Keys(AsymmetricEncryption, AbstractKeys):

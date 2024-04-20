@@ -5,11 +5,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from core.symmetric.interface import SymmetricEncryption, AbstractKey
-from core.symmetric.models import Options, Access
-from settings.constants.exceptions import TryExceptKeys
-from utils.error_handling import try_except
-from utils.validation import validate_strings
+from iokeys.core.symmetric.interface import SymmetricEncryption, AbstractKey
+from iokeys.core.symmetric.models import Options, Access
+from iokeys.settings.constants.exceptions import TryExceptKeys
+from iokeys.utils.error_handling import try_except
+from iokeys.utils.validation import validate_strings
 
 
 class Key(SymmetricEncryption, AbstractKey):

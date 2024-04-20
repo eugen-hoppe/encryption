@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.symmetric.models import Options, Access
+from iokeys.core.symmetric.models import Options, Access
 
 
 class AbstractKey(ABC):

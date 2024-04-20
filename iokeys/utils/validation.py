@@ -1,4 +1,4 @@
-from settings.constants.exceptions import ErrTxt
+from iokeys.settings.constants.exceptions import ErrTxt
 
 
 def validate_strings(*args) -> None:

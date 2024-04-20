@@ -7,9 +7,9 @@ from cryptography.exceptions import (
     InvalidSignature,
 )
 
-from utils.error_handling import TryExcEnum, TryExceptConf
-from settings.config import MODE
-from settings.constants.options import Mode
+from iokeys.utils.error_handling import TryExcEnum, TryExceptConf
+from iokeys.settings.config import MODE
+from iokeys.settings.constants.options import Mode
 
 
 DEBUG_TAG = "#debug" if MODE == Mode.DEVELOPMENT else "#prod"

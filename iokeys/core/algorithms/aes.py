@@ -4,8 +4,8 @@ import os
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-from core.symmetric.interface import SymmetricEncryption
-from core.symmetric.models import Options
+from iokeys.core.symmetric.interface import SymmetricEncryption
+from iokeys.core.symmetric.models import Options
 
 
 class AES256(SymmetricEncryption):
