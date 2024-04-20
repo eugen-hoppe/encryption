@@ -1,6 +1,6 @@
-from core.symmetric.encryption import Key
-from core.symmetric.models import Options, Access
-from core.algorithms.aes import AES256
+from iokeys.core.symmetric.encryption import Key
+from iokeys.core.symmetric.models import Options, Access
+from iokeys.core.algorithms.aes import AES256
 
 
 PASSWORT = "Pa$sW0rT"

@@ -1,10 +1,10 @@
 import time
 from dataclasses import dataclass
 
-from core.asymmetric.encryption import Keys
-from core.symmetric.encryption import Key
-from core.algorithms.aes import AES256
-from core.algorithms.rsa import RSA
+from iokeys.core.asymmetric.encryption import Keys
+from iokeys.core.symmetric.encryption import Key
+from iokeys.core.algorithms.aes import AES256
+from iokeys.core.algorithms.rsa import RSA
 
 
 MSG_1_HELLO_BOB = "Hello Bob"

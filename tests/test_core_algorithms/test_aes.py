@@ -1,9 +1,11 @@
-import unittest
-
-from core.symmetric.models import Options
-from core.algorithms.aes import AES256
 import base64
 import os
+
+import unittest
+
+from iokeys.core.symmetric.models import Options
+from iokeys.core.algorithms.aes import AES256
+
 
 
 class TestAES256(unittest.TestCase):

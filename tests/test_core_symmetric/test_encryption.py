@@ -2,9 +2,9 @@ import base64
 import unittest
 import os
 
-from core.algorithms.aes import AES256
-from core.algorithms.cc import ChaCha20
-from core.symmetric.models import Options
+from iokeys.core.algorithms.aes import AES256
+from iokeys.core.algorithms.cc import ChaCha20
+from iokeys.core.symmetric.models import Options
 
 
 class EncryptionTestBase(unittest.TestCase):

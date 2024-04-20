@@ -1,8 +1,10 @@
-import unittest
-from core.algorithms.cc import ChaCha20
-from core.symmetric.models import Options
 import base64
 import os
+
+import unittest
+
+from iokeys.core.algorithms.cc import ChaCha20
+from iokeys.core.symmetric.models import Options
 
 
 class TestChaCha20(unittest.TestCase):

@@ -1,5 +1,5 @@
-from core.asymmetric.encryption import Keys
-from core.algorithms.rsa import RSA
+from iokeys.core.asymmetric.encryption import Keys
+from iokeys.core.algorithms.rsa import RSA
 
 
 PASSWORD = "123Passw"
