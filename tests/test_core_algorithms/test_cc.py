@@ -3,8 +3,8 @@ import os
 
 import unittest
 
-from iokeys.core.algorithms.cc import ChaCha20
-from iokeys.core.symmetric.models import Options
+from stringkeys.core.algorithms.cc import ChaCha20
+from stringkeys.core.symmetric.models import Options
 
 
 class TestChaCha20(unittest.TestCase):

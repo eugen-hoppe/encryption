@@ -4,8 +4,8 @@ import os
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 
-from iokeys.core.symmetric.interface import SymmetricEncryption
-from iokeys.core.symmetric.models import Options
+from stringkeys.core.symmetric.interface import SymmetricEncryption
+from stringkeys.core.symmetric.models import Options
 
 
 class ChaCha20(SymmetricEncryption):

@@ -2,9 +2,9 @@ import base64
 import os
 
 import unittest
-
-from iokeys.core.symmetric.models import Options
-from iokeys.core.algorithms.aes import AES256
+    
+from stringkeys.core.symmetric.models import Options
+from stringkeys.core.algorithms.aes import AES256
 
 
 

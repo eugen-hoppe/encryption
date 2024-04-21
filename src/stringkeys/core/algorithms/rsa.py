@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives.serialization import (
 )
 from cryptography.hazmat.primitives import hashes
 
-from iokeys.core.asymmetric.interface import AsymmetricEncryption
+from stringkeys.core.asymmetric.interface import AsymmetricEncryption
 
 
 class RSA(AsymmetricEncryption):

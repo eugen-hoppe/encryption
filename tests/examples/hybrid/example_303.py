@@ -1,10 +1,10 @@
 import time
 from dataclasses import dataclass
 
-from iokeys.core.asymmetric.encryption import Keys
-from iokeys.core.symmetric.encryption import Key
-from iokeys.core.algorithms.aes import AES256
-from iokeys.core.algorithms.rsa import RSA
+from stringkeys.core.asymmetric.encryption import Keys
+from stringkeys.core.symmetric.encryption import Key
+from stringkeys.core.algorithms.aes import AES256
+from stringkeys.core.algorithms.rsa import RSA
 
 
 BR = "\n"

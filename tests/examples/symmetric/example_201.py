@@ -1,8 +1,8 @@
 import os
 
-from iokeys.core.algorithms import aes, cc
-from iokeys.core.symmetric import encryption
-from iokeys.core.symmetric.models import Options
+from stringkeys.core.algorithms import aes, cc
+from stringkeys.core.symmetric import encryption
+from stringkeys.core.symmetric.models import Options
 
 
 def test_encryption(index, enc, print_at=5) -> None:
