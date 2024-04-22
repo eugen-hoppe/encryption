@@ -31,7 +31,7 @@ class Keys(AsymmetricEncryption, AbstractKeys):
         return self.core.decrypt(private_key, cipher, pw)
 
     @try_except(**TryExceptKeys.SIGN_ERROR.kw())
-    def sign(self, private_key: str, message: str, pw: str) -> str:
+    def sign(self, private_key: str, message: str, pw: str | None = None) -> str:
         return self.core.sign(private_key, message, pw)
 
     @try_except(**TryExceptKeys.VALIDATE_ERROR.kw())

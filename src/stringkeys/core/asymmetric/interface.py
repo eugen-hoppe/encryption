@@ -26,14 +26,14 @@ class AsymmetricEncryption(ABC):
         pass
 
     @abstractmethod
-    def decrypt(self, private_key: str, cipher: str, pw: str) -> str:
+    def decrypt(self, private_key: str, cipher: str, pw: str | None = None) -> str:
         """
         Decrypts ciphertext using the private key.
         """
         pass
 
     @abstractmethod
-    def sign(self, private_key: str, message: str) -> str:
+    def sign(self, private_key: str, message: str, pw: str | None = None) -> str:
         """
         Signs a message using the private key.
         """

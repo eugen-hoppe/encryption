@@ -51,7 +51,7 @@ class RSA(AsymmetricEncryption):
         )
         return base64.b64encode(cipher).decode("utf-8")
 
-    def decrypt(self, private_key: str, cipher: str, pw: str = None) -> str:
+    def decrypt(self, private_key: str, cipher: str, pw: str | None = None) -> str:
         payload = RSA.pem_private_key(private_key, pw).decrypt(
             base64.b64decode(cipher),
             padding.OAEP(
