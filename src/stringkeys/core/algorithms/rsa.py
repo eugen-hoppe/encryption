@@ -16,6 +16,8 @@ from cryptography.hazmat.primitives import hashes
 
 from stringkeys.core.asymmetric.interface import AsymmetricEncryption
 from stringkeys.core.asymmetric.models import Options
+from stringkeys.settings.config import RSA_PAYLOAD_MAX_LENGTH
+from stringkeys.utils.validation import validate_payload_length
 
 
 class RSA(AsymmetricEncryption):
@@ -41,6 +43,7 @@ class RSA(AsymmetricEncryption):
         return private_key_bytes.decode(), public_key_bytes.decode()
 
     def encrypt(self, public_key: str, payload: str) -> str:
+        validate_payload_length(payload, max_length=RSA_PAYLOAD_MAX_LENGTH)
         cipher = load_pem_public_key(public_key.encode()).encrypt(
             payload.encode(),
             padding.OAEP(

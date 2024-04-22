@@ -37,14 +37,14 @@ class TestKeys(unittest.TestCase):
             self.keys.encrypt("invalid_public_key", payload)
 
     def test_decrypt_with_invalid_private_key(self):
-        private_key, public_key = self.keys.generate(self.options)
+        _, public_key = self.keys.generate(self.options)
         payload = "Data to encrypt"
         encrypted = self.keys.encrypt(public_key, payload)
         with self.assertRaises(Exception):
             self.keys.decrypt("invalid_private_key", encrypted)
 
     def test_invalid_signature(self):
-        private_key, public_key = self.keys.generate(self.options)
+        _, public_key = self.keys.generate(self.options)
         message = "Original message"
         invalid_signature = "invalid_signature"
         is_valid = self.keys.validate(public_key, message, invalid_signature)

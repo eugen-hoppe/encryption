@@ -1,6 +1,6 @@
-from stringkeys.core.asymmetric.encryption import Keys
-from stringkeys.core.algorithms.rsa import RSA
-from stringkeys.core.asymmetric.models import Options
+from src.stringkeys.core.asymmetric.encryption import Keys
+from src.stringkeys.core.algorithms.rsa import RSA
+from src.stringkeys.core.asymmetric.models import Options
 
 
 PASSWORD = "123Passw"
@@ -13,7 +13,8 @@ def run_example(password: str | None = None):
     )
     print(public_key)
 
-    original_message = "Secret Message: RSA-Encryption"
+    original_message = "Secret Message: RSA-Encryption" * 4 + " len 128"
+    print(len(original_message))
     encrypted = rsa_keys.encrypt(
         public_key=public_key,
         payload=original_message

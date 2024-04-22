@@ -1,4 +1,6 @@
-from stringkeys.settings.constants.exceptions import ErrTxt
+from stringkeys.settings.constants.exceptions import (
+    ErrTxt, PayloadTooLargeError, StringInputError,
+)
 
 
 def validate_strings(*args) -> None:
@@ -11,4 +13,10 @@ def validate_strings(*args) -> None:
             error_text = ErrTxt.ERR_INVALID_STR.value.format(
                 arg_id + 1, str(type(string))
             )
-            raise TypeError(error_text)
+            raise StringInputError(error_text)
+
+
+def validate_payload_length(payload: str, max_length: int) -> None:
+    """Validate that the payload does not exceed the maximum allowed length."""
+    if len(payload.encode('utf-8')) > max_length:
+        raise PayloadTooLargeError("Payload is too large for RSA encryption")

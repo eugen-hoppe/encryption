@@ -19,6 +19,23 @@ class ErrTxt(str, Enum):
     ERR_INVALID_STR = "ERROR: arg_{0} is not a string. Type:{1}"
 
 
+class StringKeysError(Exception):
+    """Base class for encryption-related exceptions."""
+    pass
+
+
+class StringInputError(StringKeysError):
+    def __init__(self, message="Not a String"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PayloadTooLargeError(StringKeysError):
+    def __init__(self, message="Payload is too large for encryption"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class TryExceptKeys(TryExcEnum):
     GENERATE_ERROR = TryExceptConf(
         errs=(

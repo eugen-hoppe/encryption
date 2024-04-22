@@ -3,6 +3,7 @@ import base64
 
 from cryptography.hazmat.primitives import serialization
 from stringkeys.core.algorithms.rsa import RSA
+from stringkeys.settings.constants.exceptions import PayloadTooLargeError
 
 
 class TestRSA(unittest.TestCase):
@@ -58,6 +59,16 @@ class TestRSA(unittest.TestCase):
             is_valid,
             "The signature validation should fail with an invalid signature",
         )
+
+    def test_encrypt_decrypt_large_payload(self):
+        large_payload = "A" * 10_000
+        try:
+            _ = self.rsa.encrypt(self.public_key, large_payload)
+            self.fail(
+                "Should raise an exception due to payload size exceeding block limit"
+            )
+        except PayloadTooLargeError as e:
+            self.assertIsInstance(e, PayloadTooLargeError)
 
 
 if __name__ == "__main__":
