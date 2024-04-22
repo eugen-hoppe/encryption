@@ -14,17 +14,20 @@ from cryptography.hazmat.primitives.serialization import (
 from cryptography.hazmat.primitives import hashes
 
 from stringkeys.core.asymmetric.interface import AsymmetricEncryption
+from stringkeys.core.asymmetric.models import Options
 
 
 class RSA(AsymmetricEncryption):
-    def generate(self, pw: str = None, get_pw: bool = False):
+    def generate(self, options: Options = Options()) -> tuple[str, str, None | str]:
         private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
+            public_exponent=options.key_public_exponent,
+            key_size=options.key_size,
         )
         public_key = private_key.public_key()
-        if pw:
-            encryption_algorithm = BestAvailableEncryption(pw.encode())
+        if options.key_gen_private_key_pw:
+            encryption_algorithm = BestAvailableEncryption(
+                options.key_gen_private_key_pw.encode()
+            )
         else:
             encryption_algorithm = NoEncryption()
         private_key_pem = private_key.private_bytes(
@@ -35,30 +38,31 @@ class RSA(AsymmetricEncryption):
         public_key_pem = public_key.public_bytes(
             encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
         )
-        if get_pw and pw:
-            return private_key_pem.decode(), public_key_pem.decode(), pw
-        return private_key_pem.decode(), public_key_pem.decode(), None
+        return_pw = options.key_gen_private_key_pw
+        if not options.key_gen_get_pw is True:  # TODO Remove get_pw
+            return_pw = None
+        return private_key_pem.decode(), public_key_pem.decode(), return_pw
 
-    def encrypt(self, public_key_pem: str, plaintext: str):
+    def encrypt(self, public_key_pem: str, payload: str):
         public_key = load_pem_public_key(public_key_pem.encode())
-        ciphertext = public_key.encrypt(
-            plaintext.encode(),
+        cipher = public_key.encrypt(
+            payload.encode(),
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
                 label=None,
             ),
         )
-        return base64.b64encode(ciphertext).decode("utf-8")
+        return base64.b64encode(cipher).decode("utf-8")
 
-    def decrypt(self, private_key_pem: str, ciphertext: str, pw: str = None):
+    def decrypt(self, private_key_pem: str, cipher: str, pw: str = None):
         private_key = load_pem_private_key(
             private_key_pem.encode(),
             password=(pw.encode() if pw else None),
             backend=None,
         )
         plaintext = private_key.decrypt(
-            base64.b64decode(ciphertext),
+            base64.b64decode(cipher),
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),

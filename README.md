@@ -17,3 +17,6 @@ pip install git+https://github.com/eugen-hoppe/encryption.git
 - [x] module for algorithms
 - [ ] tests
 - [ ] README.md
+- [ ] Remove get_pw (not for interface definition)
+- [ ] tests (and example.py) import form src (not lib)
+

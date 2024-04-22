@@ -1,6 +1,6 @@
 # Added
 dot_*.py
-.overview/
+.overview*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

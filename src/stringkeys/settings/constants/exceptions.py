@@ -50,3 +50,29 @@ class TryExceptKeys(TryExcEnum):
         raise_=ValueError,
         txt=f"Decryption failed {DEBUG_TAG}",
     )
+    SIGN_ERROR = TryExceptConf(
+        errs=(
+            ValueError,
+            TypeError,
+            InvalidKey,
+            UnsupportedAlgorithm,
+            AlreadyFinalized,
+        ),
+        raise_=ValueError,
+        txt=f"Signature creation failed {DEBUG_TAG}",
+    )
+    VALIDATE_ERROR = TryExceptConf(
+        errs=(
+            ValueError,
+            TypeError,
+            InvalidKey,
+            UnsupportedAlgorithm,
+        ),  # NOTE: InvalidSignature: catch inside validate method for each algorithm
+        raise_=ValueError,
+        txt=f"Signature validation failed {DEBUG_TAG}",
+    )
+    INVALID_SIGNATURE_ERROR = TryExceptConf(
+        errs=(InvalidSignature,),
+        raise_=ValueError,
+        txt=f"Implementation Error: InvalidSignature not catched {DEBUG_TAG}",
+    )

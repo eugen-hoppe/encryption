@@ -3,8 +3,8 @@ import os
 
 import unittest
 
-from stringkeys.core.symmetric.models import Options
 from stringkeys.core.algorithms.aes import AES256
+from stringkeys.core.symmetric.models import Options
 
 
 class TestAES256(unittest.TestCase):
