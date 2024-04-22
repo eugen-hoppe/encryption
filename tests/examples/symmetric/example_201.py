@@ -23,7 +23,7 @@ def test_encryption(index, enc, print_at=5) -> None:
     assert encryption_.decrypt(encrypted, access) == message
 
 
-def run_test():
+def run_example():
     for index in range(10, 100):
         test_encryption(index, aes.AES256, 9)
         test_encryption(index, cc.ChaCha20, 11)

@@ -5,7 +5,7 @@ from stringkeys.core.algorithms.rsa import RSA
 PASSWORD = "123Passw"
 
 
-def run_test(password: str | None = None):
+def run_example(password: str | None = None):
     rsa_keys = Keys(RSA)
 
     private_key_pem, public_key_pem, pw = rsa_keys.generate(password, get_pw=True)

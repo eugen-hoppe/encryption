@@ -12,8 +12,6 @@ MSG_1_HELLO_BOB = "Hello Bob"
 DELAY_SHORT = 1 # * 0.05
 
 
-DELAY_LONG = 2 * DELAY_SHORT
-
 
 @dataclass
 class Person:
@@ -35,19 +33,21 @@ class Bob(Person):
     password: str = "Bob$123"
 
 
-def print_delayed(text, delay=DELAY_SHORT, br = False):
-    print(text)
-    if br:
-        print()
-    time.sleep(delay)
 
+def run_example(delay_short: int = DELAY_SHORT):
 
-def run_test():
+    def print_delayed(text, delay=delay_short, br = False):
+        print(text)
+        if br:
+            print()
+        time.sleep(delay)
+
+    dalay_long = 2 * delay_short
     print(BR * 20)
     print(" ILLUSTRATION OF HYBRID ENCRYPTION", BR, "* " * 50)
     print(BR * 20)
     # 1. Alice: Key Generation
-    print_delayed(BR + "=" * 80 + " [ STEP 1 ]", delay=DELAY_LONG)
+    print_delayed(BR + "=" * 80 + " [ STEP 1 ]", delay=dalay_long)
     print_delayed(BR + "Initializing Alice...")
     alice = Alice()
     alice.keys_asymmetric = Keys(RSA)
@@ -60,7 +60,7 @@ def run_test():
     print_delayed(f"    - PRIVATE_KEY: {alice.private_key[:50]}...".replace(BR, ""))
 
     # 2. Bob: Key Generation and Encryption
-    print_delayed(BR + "=" * 80 + " [ STEP 2 ]", delay=DELAY_LONG)
+    print_delayed(BR + "=" * 80 + " [ STEP 2 ]", delay=dalay_long)
     print_delayed(BR + "Initializing Bob...")
     bob = Bob()
     bob.keys_asymmetric = Keys(RSA)
@@ -84,7 +84,7 @@ def run_test():
     print("       |" + BR + "         -> to Alice" + BR)
 
     # 3. Alice: Decrypting Key and Encrypting Message
-    print_delayed(BR + "=" * 80 + " [ STEP 3 ]", delay=DELAY_LONG)
+    print_delayed(BR + "=" * 80 + " [ STEP 3 ]", delay=dalay_long)
     print_delayed(
         BR + "Alice receives the ASYMMETRICALY ENCRYPTED SYMMETRIC_KEY"
         + " - ( HANDSHAKE )"
@@ -110,7 +110,7 @@ def run_test():
 
 
     # 4. Bob: Decrypting Message and Verifying Signature
-    print_delayed(BR + "=" * 80 + " [ STEP 4 ]", delay=DELAY_LONG)
+    print_delayed(BR + "=" * 80 + " [ STEP 4 ]", delay=dalay_long)
     print_delayed(
         BR + "Bob receives the ENCRYPTED MESSAGE and SIGNATURE..." + BR
     )
@@ -139,4 +139,4 @@ def run_test():
 
 
 if __name__ == "__main__":
-    run_test()
+    run_example()

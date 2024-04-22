@@ -29,7 +29,7 @@ class Bob(Person):
     password: str = "Bob$123"
 
 
-def run_test():
+def run_example():
 
     # 1. Alice
     # ========

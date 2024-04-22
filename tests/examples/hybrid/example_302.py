@@ -8,6 +8,7 @@ from stringkeys.core.algorithms.rsa import RSA
 
 
 MSG_1_HELLO_BOB = "Hello Bob"
+SLEEP_TIME = 0.1
 
 
 @dataclass
@@ -30,7 +31,7 @@ class Bob(Person):
     password: str = "Bob$123"
 
 
-def run_test():
+def run_example():
     # 1. Alice
     # ========
     print("Initializing Alice...")
@@ -38,7 +39,7 @@ def run_test():
     alice.keys_asymmetric, alice.key_symmetric = Keys(RSA), Key(AES256)
     alice.private_key, alice.public_key, _ = alice.keys_asymmetric.generate(pw=alice.password)
     print(f"Alice's keys generated. Public Key: {alice.public_key[:30]}... Private Key: {alice.private_key[:30]}...")
-    time.sleep(2)
+    time.sleep(SLEEP_TIME)
 
     # 2. Bob
     # ======
@@ -51,7 +52,7 @@ def run_test():
     print(f"Bob generated a symmetric key: {bob.key_exchange[:30]}...")
     symmetric_key = bob.keys_asymmetric.encrypt(payload=bob.key_exchange, key=alice.public_key)
     print("Bob encrypted the symmetric key using Alice's public key.")
-    time.sleep(2)
+    time.sleep(SLEEP_TIME)
 
     # 3. Alice
     # ========
@@ -64,7 +65,7 @@ def run_test():
     print("Alice encrypts the message: 'Hello Bob' and prepares to send it.")
     alice.signature = alice.keys_asymmetric.sign(private_key_pem=alice.private_key, message=MSG_1_HELLO_BOB, pw=alice.password)
     print("Alice signed the message.")
-    time.sleep(2)
+    time.sleep(SLEEP_TIME)
 
     # 4. Bob
     # ======
@@ -83,8 +84,8 @@ def run_test():
     else:
         print("Error: The message could not be decrypted correctly.")
 
-    time.sleep(2)
+    time.sleep(SLEEP_TIME)
 
 
 if __name__ == "__main__":
-    run_test()
+    run_example()

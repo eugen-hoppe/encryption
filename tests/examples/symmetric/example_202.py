@@ -10,7 +10,7 @@ PAYLOAD = "Secret Message"
 BR = "\n"
 
 
-def run_test():
+def run_example():
 
     # Init Key
     # ========
