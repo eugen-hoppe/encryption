@@ -18,7 +18,7 @@ from stringkeys.core.asymmetric.models import Options
 
 
 class RSA(AsymmetricEncryption):
-    def generate(self, options: Options = Options()) -> tuple[str, str, None | str]:
+    def generate(self, options: Options = Options()) -> tuple[str, str]:
         private_key = rsa.generate_private_key(
             public_exponent=options.key_public_exponent,
             key_size=options.key_size,
@@ -38,14 +38,10 @@ class RSA(AsymmetricEncryption):
         public_key_pem = public_key.public_bytes(
             encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
         )
-        return_pw = options.key_gen_private_key_pw
-        if not options.key_gen_get_pw is True:  # TODO Remove get_pw
-            return_pw = None
-        return private_key_pem.decode(), public_key_pem.decode(), return_pw
+        return private_key_pem.decode(), public_key_pem.decode()
 
-    def encrypt(self, public_key_pem: str, payload: str):
-        public_key = load_pem_public_key(public_key_pem.encode())
-        cipher = public_key.encrypt(
+    def encrypt(self, public_key: str, payload: str):
+        cipher = load_pem_public_key(public_key.encode()).encrypt(
             payload.encode(),
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -55,13 +51,13 @@ class RSA(AsymmetricEncryption):
         )
         return base64.b64encode(cipher).decode("utf-8")
 
-    def decrypt(self, private_key_pem: str, cipher: str, pw: str = None):
-        private_key = load_pem_private_key(
-            private_key_pem.encode(),
+    def decrypt(self, private_key: str, cipher: str, pw: str = None):
+        private_key_ = load_pem_private_key(  # DRY 1
+            private_key.encode(),
             password=(pw.encode() if pw else None),
             backend=None,
         )
-        plaintext = private_key.decrypt(
+        payload = private_key_.decrypt(
             base64.b64decode(cipher),
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -69,17 +65,15 @@ class RSA(AsymmetricEncryption):
                 label=None,
             ),
         )
-        return plaintext.decode()
+        return payload.decode()
 
-    def sign(
-        self, private_key_pem: str, message: str, password: str | None = None
-    ) -> str:
-        private_key = load_pem_private_key(
-            private_key_pem.encode(),
-            password=(password.encode() if password else None),
+    def sign(self, private_key: str, message: str, pw: str | None = None) -> str:
+        private_key_ = load_pem_private_key(  # DRY 1
+            private_key.encode(),
+            password=(pw.encode() if pw else None),
             backend=None,
         )
-        signature = private_key.sign(
+        signature = private_key_.sign(
             message.encode(),
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
@@ -88,10 +82,9 @@ class RSA(AsymmetricEncryption):
         )
         return base64.b64encode(signature).decode("utf-8")
 
-    def validate(self, public_key_pem: str, message: str, signature: str) -> bool:
-        public_key = load_pem_public_key(public_key_pem.encode())
+    def validate(self, public_key: str, message: str, signature: str) -> bool:
         try:
-            public_key.verify(
+            load_pem_public_key(public_key.encode()).verify(
                 base64.b64decode(signature),
                 message.encode(),
                 padding.PSS(

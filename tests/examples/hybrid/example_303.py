@@ -5,6 +5,7 @@ from stringkeys.core.asymmetric.encryption import Keys
 from stringkeys.core.symmetric.encryption import Key
 from stringkeys.core.algorithms.aes import AES256
 from stringkeys.core.algorithms.rsa import RSA
+from stringkeys.core.asymmetric.models import Options as OptionsRSA
 
 
 BR = "\n"
@@ -50,8 +51,8 @@ def run_example(delay_short: int = DELAY_SHORT):
     alice = Alice()
     alice.keys_asymmetric = Keys(RSA)
     alice.key_symmetric = Key(AES256)
-    alice.private_key, alice.public_key, _ = alice.keys_asymmetric.generate(
-        alice.password
+    alice.private_key, alice.public_key = alice.keys_asymmetric.generate(
+        OptionsRSA(key_gen_private_key_pw=alice.password)
     )
     print_delayed(f"  Alice's generates ASYMMTRIC KEY_PAIR:")
     print_delayed(f"    - PUBLIC_KEY: {alice.public_key[:50]}...".replace(BR, ""))
@@ -66,7 +67,10 @@ def run_example(delay_short: int = DELAY_SHORT):
     print_delayed("  Bob's asymmetric and symmetric keys are being set up...")
     bob.key_exchange = bob.key_symmetric.generate(bob.password, alice.public_key)
     print_delayed(f"  Bob generated a SYMMETRIC_KEY: {bob.key_exchange.key[:30]}...")
-    symmetric_key = bob.keys_asymmetric.encrypt(str(bob.key_exchange), alice.public_key)
+    symmetric_key = bob.keys_asymmetric.encrypt(
+        public_key=alice.public_key,
+        payload=str(bob.key_exchange),
+    )
     print_delayed("  Bob encrypts the SYMMETRIC_KEY using Alice's PUBLIC_KEY.")
 
     print(BR + BR + "Bob sends ->" + BR)
@@ -81,7 +85,9 @@ def run_example(delay_short: int = DELAY_SHORT):
         + " - ( HANDSHAKE )"
     )
     alice.key_exchange = alice.keys_asymmetric.decrypt(
-        symmetric_key, alice.private_key, alice.password
+        private_key=alice.private_key,
+        cipher=symmetric_key,
+        pw=alice.password,
     )
     print_delayed(
         f"  Alice decrypts with PRIVATE_KEY the SYMMETRIC_KEY:"
@@ -91,7 +97,9 @@ def run_example(delay_short: int = DELAY_SHORT):
     encrypted_message = alice.key_symmetric.encrypt("Hello Bob", alice.key_exchange)
     print_delayed("  Alice encrypts the MESSAGE 'Hello Bob' and prepares to send it...")
     alice.signature = alice.keys_asymmetric.sign(
-        alice.private_key, "Hello Bob", alice.password
+        private_key=alice.private_key,
+        message="Hello Bob",
+        pw=alice.password,
     )
     print_delayed("  Alice SIGN the MESSAGE.")
 
@@ -107,7 +115,9 @@ def run_example(delay_short: int = DELAY_SHORT):
         f"  Bob READ the DECRYPTED MESSAGE: " + BR + f"     {decrypted_message}"
     )
     is_from_alice = bob.keys_asymmetric.validate(
-        alice.public_key, decrypted_message, alice.signature
+        public_key=alice.public_key,
+        message=decrypted_message,
+        signature=alice.signature,
     )
     print()
     print_delayed(

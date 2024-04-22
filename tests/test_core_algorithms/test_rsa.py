@@ -8,7 +8,7 @@ from stringkeys.core.algorithms.rsa import RSA
 class TestRSA(unittest.TestCase):
     def setUp(self):
         self.rsa = RSA()
-        self.private_key, self.public_key, _ = self.rsa.generate()
+        self.private_key, self.public_key = self.rsa.generate()
         self.private_key_obj = serialization.load_pem_private_key(
             self.private_key.encode(), password=None, backend=None
         )

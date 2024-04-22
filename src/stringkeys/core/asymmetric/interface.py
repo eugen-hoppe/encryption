@@ -14,7 +14,7 @@ class AbstractKeys(ABC):
 
 class AsymmetricEncryption(ABC):
     @abstractmethod
-    def generate(self, options: Options) -> tuple[str, str, str | None]:
+    def generate(self, options: Options) -> tuple[str, str]:
         """Generates a Key-Pair(Public/Private)"""
         pass
 

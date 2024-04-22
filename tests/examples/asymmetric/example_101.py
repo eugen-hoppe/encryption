@@ -1,5 +1,6 @@
 from stringkeys.core.asymmetric.encryption import Keys
 from stringkeys.core.algorithms.rsa import RSA
+from stringkeys.core.asymmetric.models import Options
 
 
 PASSWORD = "123Passw"
@@ -7,20 +8,28 @@ PASSWORD = "123Passw"
 
 def run_example(password: str | None = None):
     rsa_keys = Keys(RSA)
-
-    private_key_pem, public_key_pem, pw = rsa_keys.generate(password, get_pw=True)
-    print(public_key_pem)
+    private_key_pem, public_key = rsa_keys.generate(
+        Options(key_gen_private_key_pw=password)
+    )
+    print(public_key)
 
     original_message = "Secret Message: RSA-Encryption"
-    encrypted = rsa_keys.encrypt(original_message, public_key_pem)
-    decrypted = rsa_keys.decrypt(encrypted, private_key_pem, pw)
+    encrypted = rsa_keys.encrypt(
+        public_key=public_key,
+        payload=original_message
+    )
+    decrypted = rsa_keys.decrypt(
+        private_key=private_key_pem,
+        cipher=encrypted,
+        pw=password
+    )
 
     print("Original:", original_message)
     print("Encrypted:", encrypted)
     print("Decrypted:", decrypted)
 
-    signature = rsa_keys.sign(private_key_pem, original_message, pw)
-    is_valid = rsa_keys.validate(public_key_pem, original_message, signature)
+    signature = rsa_keys.sign(private_key_pem, original_message, password)
+    is_valid = rsa_keys.validate(public_key, original_message, signature)
 
     print("Signature:", signature)
     print("Signature valid:", is_valid)
