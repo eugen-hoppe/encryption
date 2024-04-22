@@ -37,8 +37,12 @@ def run_example():
     print("Initializing Alice...")
     alice = Alice()
     alice.keys_asymmetric, alice.key_symmetric = Keys(RSA), Key(AES256)
-    alice.private_key, alice.public_key, _ = alice.keys_asymmetric.generate(pw=alice.password)
-    print(f"Alice's keys generated. Public Key: {alice.public_key[:30]}... Private Key: {alice.private_key[:30]}...")
+    alice.private_key, alice.public_key, _ = alice.keys_asymmetric.generate(
+        pw=alice.password
+    )
+    print(
+        f"Alice's keys generated. Public Key: {alice.public_key[:30]}... Private Key: {alice.private_key[:30]}..."
+    )
     time.sleep(SLEEP_TIME)
 
     # 2. Bob
@@ -50,7 +54,9 @@ def run_example():
     exchange = bob.key_symmetric.generate(pw=bob.password, salt=alice.public_key)
     bob.key_exchange = exchange.key
     print(f"Bob generated a symmetric key: {bob.key_exchange[:30]}...")
-    symmetric_key = bob.keys_asymmetric.encrypt(payload=bob.key_exchange, key=alice.public_key)
+    symmetric_key = bob.keys_asymmetric.encrypt(
+        payload=bob.key_exchange, key=alice.public_key
+    )
     print("Bob encrypted the symmetric key using Alice's public key.")
     time.sleep(SLEEP_TIME)
 
@@ -61,18 +67,26 @@ def run_example():
         encrypted=symmetric_key, key=alice.private_key, pw=alice.password
     )
     print(f"Alice decrypted the symmetric key: {alice.key_exchange[:30]}...")
-    encrypted_message = alice.key_symmetric.encrypt(payload=MSG_1_HELLO_BOB, key=alice.key_exchange)
+    encrypted_message = alice.key_symmetric.encrypt(
+        payload=MSG_1_HELLO_BOB, key=alice.key_exchange
+    )
     print("Alice encrypts the message: 'Hello Bob' and prepares to send it.")
-    alice.signature = alice.keys_asymmetric.sign(private_key_pem=alice.private_key, message=MSG_1_HELLO_BOB, pw=alice.password)
+    alice.signature = alice.keys_asymmetric.sign(
+        private_key_pem=alice.private_key, message=MSG_1_HELLO_BOB, pw=alice.password
+    )
     print("Alice signed the message.")
     time.sleep(SLEEP_TIME)
 
     # 4. Bob
     # ======
     print("\nBob receives the encrypted message and signature.")
-    decrypted_message = bob.key_symmetric.decrypt(payload=encrypted_message, key=bob.key_exchange)
+    decrypted_message = bob.key_symmetric.decrypt(
+        payload=encrypted_message, key=bob.key_exchange
+    )
     is_from_alice = bob.keys_asymmetric.validate(
-        public_key_pem=alice.public_key, message=decrypted_message, signature=alice.signature,
+        public_key_pem=alice.public_key,
+        message=decrypted_message,
+        signature=alice.signature,
     )
     print(f"Bob decrypted the message: {decrypted_message}")
 

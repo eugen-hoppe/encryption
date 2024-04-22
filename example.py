@@ -15,7 +15,7 @@ EXAMPLE_ID = [
 
 if __name__ == "__main__":
 
-    if 101 in EXAMPLE_ID:  # TODO name it example instead test
+    if 101 in EXAMPLE_ID:
         example_101.run_example()
 
     if 201 in EXAMPLE_ID:
