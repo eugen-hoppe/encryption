@@ -36,6 +36,21 @@ class TestChaCha20(unittest.TestCase):
         encrypted = self.chacha20.encrypt(payload, self.key, self.options)
         self.assertTrue(len(base64.urlsafe_b64decode(encrypted)) > len(payload))
 
+    def test_decrypt_with_invalid_nonce(self):
+        payload = "Valid payload"
+        encrypted = self.chacha20.encrypt(payload, self.key, self.options)
+        invalid_nonce = base64.urlsafe_b64encode(b"invalid_nonce").decode("utf-8")
+        with self.assertRaises(ValueError):
+            self.chacha20.decrypt(
+                encrypted[:16] + invalid_nonce + encrypted[16:], self.key, self.options
+            )
+
+    def test_encrypt_non_ascii_characters(self):
+        payload = "안녕하세요"  # Korean for "Hello"
+        encrypted = self.chacha20.encrypt(payload, self.key, self.options)
+        decrypted = self.chacha20.decrypt(encrypted, self.key, self.options)
+        self.assertEqual(decrypted, payload)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,6 +36,19 @@ class PayloadTooLargeError(StringKeysError):
         super().__init__(self.message)
 
 
+class InvalidKeyLengthError(StringKeysError):
+    def __init__(self, expected_length, actual_length, message=None):
+        if message is None:
+            message = (
+                f"Invalid key length: expected {expected_length} bytes,"
+                + f"got {actual_length} bytes."
+            )
+        self.expected_length = expected_length
+        self.actual_length = actual_length
+        self.message = message
+        super().__init__(self.message)
+
+
 class TryExceptKeys(TryExcEnum):
     GENERATE_ERROR = TryExceptConf(
         errs=(

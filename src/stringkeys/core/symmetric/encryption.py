@@ -9,7 +9,7 @@ from stringkeys.core.symmetric.interface import SymmetricEncryption, AbstractKey
 from stringkeys.core.symmetric.models import Options, Access
 from stringkeys.settings.constants.exceptions import TryExceptKeys
 from stringkeys.utils.error_handling import try_except
-from stringkeys.utils.validation import validate_strings
+from stringkeys.utils.validation import validate_strings, validate_key_min_length
 
 
 class Key(SymmetricEncryption, AbstractKey):
@@ -28,8 +28,10 @@ class Key(SymmetricEncryption, AbstractKey):
     def decrypt(
         self, payload: str, key: str | Access, options: Options = Options()
     ) -> str:
-        validate_strings(payload, str(key))
-        return self.core.decrypt(payload, str(key), options)
+        str_key = Access.to_string(symmetric_key=key)
+        validate_strings(payload, str_key)
+        validate_key_min_length(symmetric_key=str_key)
+        return self.core.decrypt(payload, str_key, options)
 
     @try_except(**TryExceptKeys.GENERATE_ERROR.kw())
     def generate(self, pw: str, salt: str = "", options: Options = Options()) -> Access:

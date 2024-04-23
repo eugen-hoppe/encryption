@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from stringkeys.utils.validation import validate_strings
 
 @dataclass
 class Options:
@@ -12,9 +13,16 @@ class Options:
 
 @dataclass
 class Access:
+    """TODO validate keysize"""
     key: str
     salt: str | None = None
     password: str | None = None
 
     def __str__(self) -> str:
         return self.key
+
+    @staticmethod
+    def to_string(symmetric_key: "str | Access") -> str:
+        if not isinstance(symmetric_key, str):
+            return symmetric_key.key
+        return symmetric_key

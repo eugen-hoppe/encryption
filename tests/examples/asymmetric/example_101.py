@@ -15,14 +15,9 @@ def run_example(password: str | None = None):
 
     original_message = "Secret Message: RSA-Encryption" * 4 + " len 128"
     print(len(original_message))
-    encrypted = rsa_keys.encrypt(
-        public_key=public_key,
-        payload=original_message
-    )
+    encrypted = rsa_keys.encrypt(public_key=public_key, payload=original_message)
     decrypted = rsa_keys.decrypt(
-        private_key=private_key_pem,
-        cipher=encrypted,
-        pw=password
+        private_key=private_key_pem, cipher=encrypted, pw=password
     )
 
     print("Original:", original_message)

@@ -18,12 +18,18 @@ def test_encryption(index, enc, print_at=5) -> None:
     encrypted = encryption_.encrypt(message, access)
     decrypted = encryption_.decrypt(encrypted, access)
     if index % print_at == 0:
+        print("KEY: ", str(access))
+        # YAneUWIsULl0OelV3PR2OYvpfvqsgrTaQib0xUZKCOk=
         print("TEST_ID:", index, "SALT:", salt, "PW:", pw)
         print("PAYLOAD:", decrypted, "\nENCRYPTED:", encrypted, "\n")
     assert encryption_.decrypt(encrypted, access) == message
 
 
 def run_example():
-    for index in range(10, 100):
+    for index in range(10, 50):
         test_encryption(index, aes.AES256, 9)
         test_encryption(index, cc.ChaCha20, 11)
+
+
+if __name__ == "__main__":
+    run_example()

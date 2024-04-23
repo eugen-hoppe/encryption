@@ -37,7 +37,7 @@ def run_example():
     alice = Alice()
     alice.keys_asymmetric, alice.key_symmetric = Keys(RSA), Key(AES256)
 
-    alice.private_key, alice.public_key  = alice.keys_asymmetric.generate(
+    alice.private_key, alice.public_key = alice.keys_asymmetric.generate(
         Options(key_gen_private_key_pw=alice.password)
     )
 
@@ -47,7 +47,8 @@ def run_example():
     bob.keys_asymmetric, bob.key_symmetric = Keys(RSA), Key(AES256)
 
     exchange = bob.key_symmetric.generate(
-        pw=bob.password, salt=alice.public_key,
+        pw=bob.password,
+        salt=alice.public_key,
     )
     bob.key_exchange = exchange.key
     symmetric_key = bob.keys_asymmetric.encrypt(
@@ -63,8 +64,7 @@ def run_example():
         pw=alice.password,
     )
     encrypted_message = alice.key_symmetric.encrypt(
-        payload=MSG_1_HELLO_BOB,
-        key=alice.key_exchange
+        payload=MSG_1_HELLO_BOB, key=alice.key_exchange
     )
     alice.signature = alice.keys_asymmetric.sign(
         private_key=alice.private_key,
@@ -75,8 +75,7 @@ def run_example():
     # 4. Bob
     # ======
     decrypted_message = bob.key_symmetric.decrypt(
-        payload=encrypted_message,
-        key=bob.key_exchange
+        payload=encrypted_message, key=bob.key_exchange
     )
     is_from_alice = bob.keys_asymmetric.validate(
         public_key=alice.public_key,

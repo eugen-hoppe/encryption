@@ -36,6 +36,18 @@ class TestAES256(unittest.TestCase):
         encrypted = self.aes256.encrypt(payload, self.key, self.options)
         self.assertTrue(len(base64.urlsafe_b64decode(encrypted)) > len(payload))
 
+    def test_decrypt_with_invalid_key(self):
+        encrypted = self.aes256.encrypt("Valid payload", self.key, self.options)
+        invalid_key = base64.urlsafe_b64encode(b"invalid_key").decode("utf-8")
+        with self.assertRaises(ValueError):
+            self.aes256.decrypt(encrypted, invalid_key, self.options)
+
+    def test_encrypt_non_ascii_characters(self):
+        payload = "こんにちは世界"  # Japanese for "Hello, World"
+        encrypted = self.aes256.encrypt(payload, self.key, self.options)
+        decrypted = self.aes256.decrypt(encrypted, self.key, self.options)
+        self.assertEqual(decrypted, payload)
+
 
 if __name__ == "__main__":
     unittest.main()

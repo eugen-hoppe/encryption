@@ -92,7 +92,7 @@ class RSA(AsymmetricEncryption):
 
     @staticmethod
     def pem_private_key(private_key: str, pw: str | None) -> PrivateKeyTypes:
-        loaded_private_key = load_pem_private_key( 
+        loaded_private_key = load_pem_private_key(
             private_key.encode(),
             password=(pw.encode() if isinstance(pw, str) else None),
             backend=None,

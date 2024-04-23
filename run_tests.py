@@ -30,19 +30,16 @@ if __name__ == "__main__":
     if RUN_EXAMPLES:
 
         # Asymmetric Encryption
-        # ---------------------
         if 101 in EXAMPLE_ID:
             example_101.run_example()
 
         # Asymmetric/Symmetric Encryption
-        # -------------------------------
         if 201 in EXAMPLE_ID:
             example_201.run_example()
         if 202 in EXAMPLE_ID:
             example_202.run_example()
 
         # Symmetric Encryption
-        # --------------------
         if 301 in EXAMPLE_ID:
             example_301.run_example()
         if 303 in EXAMPLE_ID:
